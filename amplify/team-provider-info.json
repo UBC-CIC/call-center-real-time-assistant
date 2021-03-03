@@ -10,6 +10,34 @@
       "StackName": "amplify-ecomm911frontend2-dev-150048",
       "StackId": "arn:aws:cloudformation:us-west-2:678246985943:stack/amplify-ecomm911frontend2-dev-150048/f8d22e00-762a-11eb-b52c-0a90d5effc2d",
       "AmplifyAppId": "d2b929loer44on"
+    },
+    "categories": {
+      "auth": {
+        "ecomm911frontend210ffde2b": {}
+      },
+      "storage": {
+        "contactDetails": {
+          "tableName": "contactDetails",
+          "region": "us-west-2",
+          "arn": "arn:aws:dynamodb:us-west-2:678246985943:table/contactDetails",
+          "partitionKeyName": "ContactId",
+          "partitionKeyType": "S"
+        },
+        "contactTranscriptSegments": {
+          "tableName": "contactTranscriptSegments",
+          "region": "us-west-2",
+          "arn": "arn:aws:dynamodb:us-west-2:678246985943:table/contactTranscriptSegments",
+          "streamArn": "arn:aws:dynamodb:us-west-2:678246985943:table/contactTranscriptSegments/stream/2021-01-20T01:45:26.203",
+          "partitionKeyName": "ContactId",
+          "partitionKeyType": "S"
+        }
+      },
+      "function": {
+        "transcriptFetcher": {
+          "deploymentBucketName": "amplify-ecomm911frontend2-dev-150048-deployment",
+          "s3Key": "amplify-builds/transcriptFetcher-6b72474f4f5068623645-build.zip"
+        }
+      }
     }
   }
 }

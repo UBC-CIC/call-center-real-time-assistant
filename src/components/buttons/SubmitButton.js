@@ -2,7 +2,7 @@ import React from "react";
 import {Button} from "semantic-ui-react";
 
 
-export default class SubmitButton extends React.Component{
+export default class SubmitButton extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -32,11 +32,12 @@ export default class SubmitButton extends React.Component{
     }
 
     render() {
+        //TODO Disable submit button initially
         return (
             <Button basic={!this.state.enabled}
+                    disabled={!this.state.enabled}
                     color={'red'}
-                    onClick={this.handleClick}
-            >
+                    onClick={this.handleClick}>
                 Submit
             </Button>
         );

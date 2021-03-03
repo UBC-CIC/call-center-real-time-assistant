@@ -46,3 +46,5 @@ export const JURISDICTIONS = [
     {key: 'VEPD', value: 'Victoria/Esquimalt'},
     {key: 'PMPD', value: 'Port Moody'},
 ]
+
+export const END_OF_CALL_STRING = "------------------------------------------------ END OF CALL --------------------------------------------------"

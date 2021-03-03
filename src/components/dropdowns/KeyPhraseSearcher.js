@@ -8,7 +8,7 @@ export default class KeyPhraseSearcher extends React.Component {
         super(props);
         this.state = {
             dropdownOptions: [],
-            selectedValue: ''
+            selectedValue: []
         };
         this.suggestedPhrases = []
         this.suggestedOptions = []
@@ -20,11 +20,20 @@ export default class KeyPhraseSearcher extends React.Component {
         this.toggleVisibility = this.toggleVisibility.bind(this)
     }
 
+    /**
+     * Handler that saves user added options into the dropdown
+     * @param event - Event that triggers data entry
+     * @param data - User added data
+     */
     handleManualKeyphraseAdd(event, data) {
         this.manualOptions.push({key: data.value, value: data.value, text: data.value})
         this.setState({dropdownOptions: this.suggestedOptions.concat(this.manualOptions)})
     }
 
+    /**
+     * Updates the dropdown with a list of values that are passed in
+     * @param keyphrases - List of values to add
+     */
     updateKeyphrases(keyphrases) {
         let tempList = []
         for (let phrase of keyphrases) {
@@ -39,21 +48,32 @@ export default class KeyPhraseSearcher extends React.Component {
         this.toggleVisibility()
     }
 
+    /**
+     * Returns the value(s) currently selected by the dropdown
+     * @returns {string|*}
+     */
     getSelectedValue() {
         return this.state.selectedValue
     }
 
+    /**
+     * Helper function to toggle glow animation
+     */
     toggleVisibility() {
         this.setState((prevState) => ({visible: !prevState.visible}))
     }
 
+    /**
+     * Updates the dropdown value based on events
+     * @param event - Event that adds data
+     * @param data - Data to be added to the dropdown
+     */
     onChange(event, data) {
         this.setState({selectedValue: data.value})
     }
 
     render() {
         //TODO Manual search button attached to the dropdown
-        //TODO Said button will submit feedback to feedback table
         const {visible} = this.state
         return (
             <Transition visible={visible} animation='glow' duration={1500}>
