@@ -6,13 +6,16 @@ export default class SubmitButton extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            enabled: false
+            enabled: true
         };
-        this.enableFeedbackButton = props.enableFeedbackButton
         this.toggleButton = this.toggleButton.bind(this)
         this.handleClick = this.handleClick.bind(this)
     }
 
+    /**
+     * Toggles the submit button between enabled and disabled state
+     * @param val
+     */
     toggleButton(val) {
         this.setState({
             enabled: val
@@ -20,25 +23,19 @@ export default class SubmitButton extends React.Component {
     }
 
     /**
-     * First step in enabling the feedback button
-     *
-     * **SubmitButton.handleClick()** ->
-     *   App.enableFeedbackButton()   ->
-     *   FeedbackButton.enableFeedbackButton()
+     * Click handler for the submit button
      */
     handleClick() {
-        // TODO Allow the submit button to save mapped procedure somewhere
-        this.enableFeedbackButton()
+        // TODO Submit button will fetch SOP document via API call from somewhere
     }
 
     render() {
-        //TODO Disable submit button initially
         return (
             <Button basic={!this.state.enabled}
                     disabled={!this.state.enabled}
                     color={'red'}
                     onClick={this.handleClick}>
-                Submit
+                Fetch SOP
             </Button>
         );
     }

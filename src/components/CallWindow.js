@@ -1,20 +1,8 @@
 import React from 'react';
 import {Button, Dropdown, Grid, Icon} from 'semantic-ui-react';
 import {DynamoDBClient, ScanCommand} from "@aws-sdk/client-dynamodb";
-import {fromCognitoIdentityPool} from "@aws-sdk/credential-provider-cognito-identity";
-import {CognitoIdentityClient} from "@aws-sdk/client-cognito-identity";
 import {unmarshall} from "@aws-sdk/util-dynamodb";
-import awsmobile from "../aws-exports";
-
-// TODO have the region pulled from some kind of environment variable
-
-export const dynamoDBClient = new DynamoDBClient({
-    region: 'us-west-2',
-    credentials: fromCognitoIdentityPool({
-        client: new CognitoIdentityClient({ region: awsmobile.aws_project_region }),
-        identityPoolId: awsmobile.aws_cognito_identity_pool_id,
-    })
-});
+import {Auth} from "aws-amplify";
 
 
 const queryParams = {
@@ -47,11 +35,21 @@ export default class CallWindow extends React.Component {
      * @returns list of callerIDs
      */
     getCallerIDS() {
-        return dynamoDBClient.send(new ScanCommand(queryParams)).then((result) => {
-            return result.Items.map((Item) => unmarshall(Item).ContactId)
-        }).catch((err) => {
-            console.log(err)
-        });
+        return Auth.currentCredentials()
+            .then((credentials) => {
+                return new DynamoDBClient({
+                    // TODO have the region pulled from some kind of environment variables
+                    region: 'us-west-2',
+                    credentials: credentials
+                });
+            }).then((client) => {
+                return client.send(new ScanCommand(queryParams))
+            }).then((result) => {
+                return result.Items.map((Item) => unmarshall(Item).ContactId)
+            }).catch((err) => {
+                console.log(err)
+            });
+
     }
 
     /**
@@ -71,6 +69,8 @@ export default class CallWindow extends React.Component {
             that.setState({
                 callDropdownOptions: that.callerIDS
             });
+        }).catch(err => {
+            console.log(err)
         })
     }
 
@@ -81,7 +81,6 @@ export default class CallWindow extends React.Component {
      * @param data - data that is modified by the event
      */
     onDropdownValueSet(event, data) {
-        //TODO Uncomment this
         this.state.handleCallerIDSet(data.value)
     }
 
@@ -90,13 +89,13 @@ export default class CallWindow extends React.Component {
         return (
             <Grid columns={2} divided textAlign='center'>
                 <Grid.Row>
-                <Dropdown placeholder='Live Call ID'
-                          onChange={this.onDropdownValueSet}
-                          options={this.state.callDropdownOptions}
-                          search selection/>
-                <Button secondary icon onClick={this.refreshClick}>
-                    <Icon name={'sync'}/>
-                </Button>
+                    <Dropdown placeholder='Live Call ID'
+                              onChange={this.onDropdownValueSet}
+                              options={this.state.callDropdownOptions}
+                              search selection/>
+                    <Button secondary icon onClick={this.refreshClick}>
+                        <Icon name={'sync'}/>
+                    </Button>
                 </Grid.Row>
             </Grid>
         );

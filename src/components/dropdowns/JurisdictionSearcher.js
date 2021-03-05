@@ -12,6 +12,8 @@ export default class JurisdictionSearcher extends React.Component {
             visible: true
         }
         this.jurisdictionOptions = []
+
+        // Filling up the jurisdictions dropdown options with pre-defined values
         for (let jurisdiction of JURISDICTIONS) {
             this.jurisdictionOptions.push({
                 key: jurisdiction.key, value: jurisdiction.key,
@@ -19,25 +21,42 @@ export default class JurisdictionSearcher extends React.Component {
             })
         }
 
+        // Binding the functions to the instance
         this.updateJurisdiction = this.updateJurisdiction.bind(this)
         this.getSelectedValue = this.getSelectedValue.bind(this)
         this.onChange = this.onChange.bind(this)
         this.toggleVisibility = this.toggleVisibility.bind(this)
     }
 
+    /**
+     * Updates the selected value dropdown value and creating a glow transition animation
+     * @param jurisdiction - Value to update the dropdown with
+     */
     updateJurisdiction(jurisdiction) {
         this.setState({selectedValue: jurisdiction})
         this.toggleVisibility()
     }
 
+    /**
+     * Returns the string of the selected dropdown value
+     * @returns {string}
+     */
     getSelectedValue() {
         return this.state.selectedValue
     }
 
+    /**
+     * Handler to re-draw dropdown when value filled
+     * @param event
+     * @param data
+     */
     onChange(event, data) {
         this.setState({selectedValue: data.value})
     }
 
+    /**
+     * Helper function for the glow transition animation
+     */
     toggleVisibility() {
         this.setState((prevState) => ({visible: !prevState.visible}))
     }

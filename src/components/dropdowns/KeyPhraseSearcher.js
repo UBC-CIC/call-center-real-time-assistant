@@ -13,6 +13,8 @@ export default class KeyPhraseSearcher extends React.Component {
         this.suggestedPhrases = []
         this.suggestedOptions = []
         this.manualOptions = []
+
+        // Binding the functions to the instance
         this.handleManualKeyphraseAdd = this.handleManualKeyphraseAdd.bind(this)
         this.updateKeyphrases = this.updateKeyphrases.bind(this)
         this.getSelectedValue = this.getSelectedValue.bind(this)
@@ -50,7 +52,7 @@ export default class KeyPhraseSearcher extends React.Component {
 
     /**
      * Returns the value(s) currently selected by the dropdown
-     * @returns {string|*}
+     * @returns {string[]}
      */
     getSelectedValue() {
         return this.state.selectedValue

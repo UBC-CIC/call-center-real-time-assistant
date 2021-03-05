@@ -1,14 +1,14 @@
 import React from "react";
-import {Grid, Popup, Segment} from "semantic-ui-react";
+import {Grid, Message, Segment} from "semantic-ui-react";
 import TranscriptBox from "./TranscriptBox";
 import KeyPhraseSearcher from "./dropdowns/KeyPhraseSearcher";
 import ProcedureSearcher from "./dropdowns/ProcedureSearcher";
 import JurisdictionSearcher from "./dropdowns/JurisdictionSearcher";
 import SubmitButton from "./buttons/SubmitButton";
-import {dynamoDBClient} from "./CallWindow";
-import {GetItemCommand} from "@aws-sdk/client-dynamodb";
+import {DynamoDBClient, GetItemCommand} from "@aws-sdk/client-dynamodb";
 import {marshall, unmarshall} from "@aws-sdk/util-dynamodb";
-import {END_OF_CALL_STRING} from "./Constants";
+import {DYNAMODB_PING_INTERVAL, END_OF_CALL_STRING, MAX_CHANGELESS_PINGS} from "./Constants";
+import {Auth} from "aws-amplify";
 
 
 export default class AssistantWindow extends React.Component {
@@ -17,7 +17,7 @@ export default class AssistantWindow extends React.Component {
         this.state = {
             // transcript: '',
             // keyphrases: [],
-            proceduresPopup: '',
+            procedureSuggestions: '...',
             // jurisdictions: []
         }
         this.callerID = 'empty'
@@ -48,7 +48,7 @@ export default class AssistantWindow extends React.Component {
     updateAssistantWindow(newID) {
         this.resetAssistant()
         this.callerID = newID
-        this.timerID = setInterval(this.assistantTick, 3000)
+        this.timerID = setInterval(this.assistantTick, DYNAMODB_PING_INTERVAL)
     }
 
     /**
@@ -80,16 +80,21 @@ export default class AssistantWindow extends React.Component {
             Key: marshall({ContactId: this.callerID})
         }
         let that = this
-        dynamoDBClient.send(new GetItemCommand(callQueryParams)).then((result) => {
+        Auth.currentCredentials()
+            .then(credentials => {
+                return new DynamoDBClient({
+                    region: 'us-west-2',
+                    credentials: credentials,
+                })
+            }).then((dynamoDBClient) => {
+            return dynamoDBClient.send(new GetItemCommand(callQueryParams))
+        }).then((result) => {
             let callDetails = unmarshall(result.Item)
-
             if (callDetails['EndTime'] !== that.callEndTime) {
                 that.callEndTime = callDetails['EndTime']
                 that.transcriptBox.current.updateTranscript(callDetails['Transcript'])
             } else {
-                console.log('Actual time and end time matched? AT:' + callDetails["EndTime"]
-                    + "ET:" + callDetails["EndTime"])
-                if (that.pauseCount++ === 7) {
+                if (that.pauseCount++ === MAX_CHANGELESS_PINGS) {
                     that.transcriptBox.current.updateTranscript(
                         <div>
                             {callDetails['Transcript']}
@@ -106,29 +111,43 @@ export default class AssistantWindow extends React.Component {
             console.log(err)
         })
 
-        dynamoDBClient.send(new GetItemCommand(callSearchResultQueryParams)).then((result) => {
+        Auth.currentCredentials()
+            .then((credentials) => {
+                return new DynamoDBClient({
+                    region: 'us-west-2',
+                    credentials: credentials,
+                })
+            }).then((dynamoDBClient) => {
+            return dynamoDBClient.send(new GetItemCommand(callSearchResultQueryParams))
+        }).then((result) => {
             let searchResults = unmarshall(result.Item)
             if (searchResults['Keyphrases'] !== undefined) {
                 that.keyPhraseDropdown.current.updateKeyphrases(Array.from(new Set(searchResults['Keyphrases'])))
             }
             if (searchResults['RecommendedSOP'] !== undefined) {
                 that.procedureDropdown.current.updateProcedure(searchResults['RecommendedSOP'].split(',')[0])
-                that.setState({proceduresPopup: "The recommended SOP's are ".concat(searchResults['RecommendedSOP'])})
+                that.setState({procedureSuggestions: searchResults['RecommendedSOP'].toString()})
             }
             if (searchResults['Jurisdiction'] !== undefined && searchResults['Jurisdiction'] !== 'Undetermined') {
                 that.jurisdictionDropdown.current.updateJurisdiction(searchResults['Jurisdiction'])
             }
+        }).catch((err) => {
+            console.log(err)
         })
-
     }
 
 
     /**
      * Stops pinging DynamoDB for data once it has detected that the call is over
+     * Also the first step in enabling the feedback button
+     *
+     * **AssistantWindow.tickClearer()** ->
+     *   App.enableFeedbackButton()   ->
+     *   FeedbackButton.enableFeedbackButton()
      */
     tickClearer() {
         clearInterval(this.timerID)
-        this.submitButton.current.toggleButton(true)
+        this.enableFeedbackButton()
         console.log("tick has been cleared: " + this.timerID.toString())
     }
 
@@ -147,26 +166,17 @@ export default class AssistantWindow extends React.Component {
                     <KeyPhraseSearcher ref={this.keyPhraseDropdown}/>
                 </Grid.Column>
                 <Grid.Column>
-                    <Popup
-                        content={this.state.proceduresPopup}
-                        position='top center'
-                        trigger={
-                            <Segment>
-                                <ProcedureSearcher ref={this.procedureDropdown}/>
-                            </Segment>
-                        }
-                    />
-                    {/*<Popup*/}
-                    {/*    content=''*/}
-                    {/*    position='bottom center'*/}
-                    {/*    trigger={*/}
-                            <Segment>
-                                <JurisdictionSearcher ref={this.jurisdictionDropdown}/>
-                            </Segment>
-                    {/*//     }*/}
-                    {/*// />*/}
+                    <Message info
+                             content={"Recommended SOP's are " + this.state.procedureSuggestions}>
+                    </Message>
+                    <Segment>
+                        <ProcedureSearcher ref={this.procedureDropdown}/>
+                    </Segment>
+                    <Segment>
+                        <JurisdictionSearcher ref={this.jurisdictionDropdown}/>
+                    </Segment>
                 </Grid.Column>
-                <Grid.Column computer={1}>
+                <Grid.Column computer={2}>
                     <SubmitButton ref={this.submitButton}
                                   enableFeedbackButton={this.enableFeedbackButton}/>
                 </Grid.Column>

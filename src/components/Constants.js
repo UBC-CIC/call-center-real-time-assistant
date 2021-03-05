@@ -37,14 +37,10 @@ export const JURISDICTIONS = [
     {key: 'VPD',value: 'Vancouver'},
     {key: 'APD', value: 'Abbotsford'},
     {key: 'DPD', value: 'Delta'},
-    {key: 'NWPD', value: 'New Westminster'},
-    {key: 'WVPD', value: 'West Vancouver'},
-    {key: 'CSP', value: 'Central Saanich'},
-    {key: 'NPD', value: 'Nelson'},
-    {key: 'OBPD', value: 'Oak Bay'},
-    {key: 'CPD', value: 'Saanich'},
-    {key: 'VEPD', value: 'Victoria/Esquimalt'},
-    {key: 'PMPD', value: 'Port Moody'},
 ]
+
+export const DYNAMODB_PING_INTERVAL = 1000
+
+export const MAX_CHANGELESS_PINGS = 20
 
 export const END_OF_CALL_STRING = "------------------------------------------------ END OF CALL --------------------------------------------------"

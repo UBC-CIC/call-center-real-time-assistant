@@ -11,6 +11,7 @@ export default class ProcedureSearcher extends React.Component {
             selectedValue: '',
             visible: true
         }
+        // Filling up the procedures dropdown options with pre-defined values
         this.procedureOptions = []
         for (let procedure of PROCEDURES) {
             this.procedureOptions.push({
@@ -20,25 +21,43 @@ export default class ProcedureSearcher extends React.Component {
                 description: procedure.text
             })
         }
+
+        // Binding the functions to the instance
         this.updateProcedure = this.updateProcedure.bind(this)
         this.getSelectedValue = this.getSelectedValue.bind(this)
         this.onChange = this.onChange.bind(this)
         this.toggleVisibility = this.toggleVisibility.bind(this)
     }
 
+    /**
+     * Function to autofill the dropdown selected value with a glow animation
+     * @param procedure - Value to update the dropdown with
+     */
     updateProcedure(procedure) {
         this.setState({selectedValue: procedure})
         this.toggleVisibility()
     }
 
+    /**
+     * Returns a string value of the selected procedure
+     * @returns {string}
+     */
     getSelectedValue() {
         return this.state.selectedValue
     }
 
+    /**
+     * Handler to re-draw selected value change for the dropdown
+     * @param event
+     * @param data
+     */
     onChange(event, data) {
         this.setState({selectedValue: data.value})
     }
 
+    /**
+     * Helper function for glow animation
+     */
     toggleVisibility() {
         this.setState((prevState) => ({visible: !prevState.visible}))
     }
@@ -55,7 +74,6 @@ export default class ProcedureSearcher extends React.Component {
                           onChange={this.onChange}
                 />
             </Transition>
-
         );
     }
 }

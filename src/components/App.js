@@ -24,7 +24,7 @@ class App extends React.Component {
         super(props);
         this.state = {
             calls: [],
-            submitted: false,
+            hasCallEnded: false,
             feedbackSegment: <div/>,
             incorrectFeedbackDetailsForm: <div/>
         };
@@ -61,7 +61,7 @@ class App extends React.Component {
      */
     enableFeedbackButton() {
         this.setState({
-            submitted: true
+            hasCallEnded: true
         })
         this.feedbackButton.current.enableFeedbackButton()
     }
@@ -124,7 +124,7 @@ class App extends React.Component {
                         </Segment>
                         <Segment>
                             <FeedbackButton ref={this.feedbackButton}
-                                            buttonEnabled={this.state.submitted}
+                                            buttonEnabled={this.state.hasCallEnded}
                                             onClick={this.handleFeedbackClick}/>
                         </Segment>
                         {this.state.feedbackSegment}
