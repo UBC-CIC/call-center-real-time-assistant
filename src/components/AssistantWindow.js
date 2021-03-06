@@ -15,14 +15,13 @@ export default class AssistantWindow extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            // transcript: '',
-            // keyphrases: [],
             procedureSuggestions: '...',
-            // jurisdictions: []
         }
         this.callerID = 'empty'
         this.callEndTime = null
         this.timerID = null
+        this.credentials = null
+        this.dynamoDBClient = null
         this.pauseCount = 0
         this.enableFeedbackButton = props.enableFeedbackButton
 
@@ -38,6 +37,22 @@ export default class AssistantWindow extends React.Component {
         this.assistantTick = this.assistantTick.bind(this)
         this.tickClearer = this.tickClearer.bind(this)
         this.resetAssistant = this.resetAssistant.bind(this)
+        this.initialiseDynamoDBClient = this.initialiseDynamoDBClient.bind(this)
+        this.initialiseDynamoDBClient().catch(err => console.log("Error in creating dynamo DB: " + err))
+    }
+
+    /**
+     * Helper function that initialises the DynamoDB client with the logged in user's credentials
+     * obtained via Amplify Auth
+     * @returns {Promise<void>}
+     */
+    async initialiseDynamoDBClient() {
+        this.credentials = await Auth.currentCredentials()
+        this.dynamoDBClient = await new DynamoDBClient({
+            //TODO get region from some form of amplify configuration
+            region: 'us-west-2',
+            credentials: this.credentials,
+        })
     }
 
     /**
@@ -67,9 +82,12 @@ export default class AssistantWindow extends React.Component {
     }
 
     /**
-     *
+     * Called on a pre-defined interval to query data from two DynamoDB tables, contactTranscriptSegments
+     * and contactDetails. Credentials to authenticate and authorize queries are obtained via Amplify Auth
+     * It then updates the necessary TranscriptBox, KeyPhraseSearcher, ProcedureSearcher and JurisdictionSearcher
+     * components with the data
      */
-    assistantTick() {
+    async assistantTick() {
         console.log("still ticking")
         let callQueryParams = {
             TableName: 'contactTranscriptSegments',
@@ -80,15 +98,9 @@ export default class AssistantWindow extends React.Component {
             Key: marshall({ContactId: this.callerID})
         }
         let that = this
-        Auth.currentCredentials()
-            .then(credentials => {
-                return new DynamoDBClient({
-                    region: 'us-west-2',
-                    credentials: credentials,
-                })
-            }).then((dynamoDBClient) => {
-            return dynamoDBClient.send(new GetItemCommand(callQueryParams))
-        }).then((result) => {
+
+        this.dynamoDBClient.send(new GetItemCommand(callQueryParams))
+        .then((result) => {
             let callDetails = unmarshall(result.Item)
             if (callDetails['EndTime'] !== that.callEndTime) {
                 that.callEndTime = callDetails['EndTime']
@@ -111,20 +123,14 @@ export default class AssistantWindow extends React.Component {
             console.log(err)
         })
 
-        Auth.currentCredentials()
-            .then((credentials) => {
-                return new DynamoDBClient({
-                    region: 'us-west-2',
-                    credentials: credentials,
-                })
-            }).then((dynamoDBClient) => {
-            return dynamoDBClient.send(new GetItemCommand(callSearchResultQueryParams))
-        }).then((result) => {
+        this.dynamoDBClient.send(new GetItemCommand(callSearchResultQueryParams))
+        .then((result) => {
             let searchResults = unmarshall(result.Item)
             if (searchResults['Keyphrases'] !== undefined) {
                 that.keyPhraseDropdown.current.updateKeyphrases(Array.from(new Set(searchResults['Keyphrases'])))
             }
             if (searchResults['RecommendedSOP'] !== undefined) {
+                //TODO Persist the results into 3 fetch buttons
                 that.procedureDropdown.current.updateProcedure(searchResults['RecommendedSOP'].split(',')[0])
                 that.setState({procedureSuggestions: searchResults['RecommendedSOP'].toString()})
             }

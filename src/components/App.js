@@ -93,6 +93,7 @@ class App extends React.Component {
                             <TextArea placeholder='Please explain what went wrong'/>
                         </Form>
                         <br/>
+                        {/*TODO This button will handle feedback submission*/}
                         <Button onClick={this.handleIncorrectFeedbackSubmit}>Submit</Button>
                     </Segment>
         })
@@ -108,6 +109,7 @@ class App extends React.Component {
 
     handleCorrectFeedback() {
         //TODO Index the current transcript and its prediction results into the search engine
+        // will also submit feedback into the feedback table
     }
 
     render() {
