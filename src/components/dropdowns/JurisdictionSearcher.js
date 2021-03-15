@@ -47,11 +47,13 @@ export default class JurisdictionSearcher extends React.Component {
 
     /**
      * Handler to re-draw dropdown when value filled
+     * Also calls a handler in AssistantWindow to pass the selected value there
      * @param event
      * @param data
      */
     onChange(event, data) {
         this.setState({selectedValue: data.value})
+        // this.onDropdownset(data.value)
     }
 
     /**

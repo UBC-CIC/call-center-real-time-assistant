@@ -3,6 +3,7 @@ import {Button, Dropdown, Grid, Icon} from 'semantic-ui-react';
 import {DynamoDBClient, ScanCommand} from "@aws-sdk/client-dynamodb";
 import {unmarshall} from "@aws-sdk/util-dynamodb";
 import {Auth} from "aws-amplify";
+import config from "../aws-exports";
 
 
 const queryParams = {
@@ -38,8 +39,7 @@ export default class CallWindow extends React.Component {
         return Auth.currentCredentials()
             .then((credentials) => {
                 return new DynamoDBClient({
-                    // TODO have the region pulled from some kind of environment variables
-                    region: 'us-west-2',
+                    region: config.aws_project_region,
                     credentials: credentials
                 });
             }).then((client) => {

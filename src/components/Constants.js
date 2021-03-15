@@ -39,8 +39,8 @@ export const JURISDICTIONS = [
     {key: 'DPD', value: 'Delta'},
 ]
 
-export const DYNAMODB_PING_INTERVAL = 3000
+export const DYNAMODB_PING_INTERVAL = 990 //In milliseconds
 
-export const MAX_CHANGELESS_PINGS = 8
+// export var AWS_REGION = 15
 
 export const END_OF_CALL_STRING = "------------------------------------------------ END OF CALL --------------------------------------------------"

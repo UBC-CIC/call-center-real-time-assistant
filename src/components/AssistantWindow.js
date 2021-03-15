@@ -4,10 +4,11 @@ import TranscriptBox from "./TranscriptBox";
 import KeyPhraseSearcher from "./dropdowns/KeyPhraseSearcher";
 import ProcedureSearcher from "./dropdowns/ProcedureSearcher";
 import JurisdictionSearcher from "./dropdowns/JurisdictionSearcher";
-import SubmitButton from "./buttons/SubmitButton";
+import SOPButton from "./buttons/SOPButton";
 import {DynamoDBClient, GetItemCommand} from "@aws-sdk/client-dynamodb";
 import {marshall, unmarshall} from "@aws-sdk/util-dynamodb";
-import {DYNAMODB_PING_INTERVAL, END_OF_CALL_STRING, MAX_CHANGELESS_PINGS} from "./Constants";
+import {DYNAMODB_PING_INTERVAL, END_OF_CALL_STRING} from "./Constants";
+import config from "../aws-exports";
 import {Auth} from "aws-amplify";
 
 
@@ -16,27 +17,33 @@ export default class AssistantWindow extends React.Component {
         super(props);
         this.state = {
             procedureSuggestions: '...',
+            manualSOPButtonLabel: 'Fetch Dropdown SOP',
+            dropdownJurisdiction: ''
         }
         this.callerID = 'empty'
-        this.callEndTime = null
         this.timerID = null
         this.credentials = null
         this.dynamoDBClient = null
-        this.pauseCount = 0
+        this.procedureDropdownValue = null
         this.enableFeedbackButton = props.enableFeedbackButton
 
         // Refs to access child components
-        this.transcriptBox = React.createRef()
+        this.callerTranscript = React.createRef()
+        this.calleeTranscript = React.createRef()
         this.keyPhraseDropdown = React.createRef()
         this.procedureDropdown = React.createRef()
         this.jurisdictionDropdown = React.createRef()
-        this.submitButton = React.createRef()
+        this.firstSOPButton = React.createRef()
+        this.secondSOPButton = React.createRef()
+        this.thirdSOPButton = React.createRef()
+        this.manualSOPButton = React.createRef()
 
         // Binding the AssistantWindow instance to its functions
         this.updateAssistantWindow = this.updateAssistantWindow.bind(this)
         this.assistantTick = this.assistantTick.bind(this)
         this.tickClearer = this.tickClearer.bind(this)
         this.resetAssistant = this.resetAssistant.bind(this)
+        this.onProcedureDropdownSet = this.onProcedureDropdownSet.bind(this)
         this.initialiseDynamoDBClient = this.initialiseDynamoDBClient.bind(this)
         this.initialiseDynamoDBClient().catch(err => console.log("Error in creating dynamo DB: " + err))
     }
@@ -50,7 +57,7 @@ export default class AssistantWindow extends React.Component {
         this.credentials = await Auth.currentCredentials()
         this.dynamoDBClient = await new DynamoDBClient({
             //TODO get region from some form of amplify configuration
-            region: 'us-west-2',
+            region: config.aws_project_region,
             credentials: this.credentials,
         })
     }
@@ -71,13 +78,14 @@ export default class AssistantWindow extends React.Component {
      * selected call
      */
     resetAssistant() {
-        this.transcriptBox.current.updateTranscript('')
+        this.callerTranscript.current.updateTranscript('')
+        this.calleeTranscript.current.updateTranscript('')
         this.keyPhraseDropdown.current.updateKeyphrases([])
         this.procedureDropdown.current.updateProcedure('')
         this.jurisdictionDropdown.current.updateJurisdiction('')
         this.setState({proceduresPopup: ''})
-        this.pauseCount = 0
-        this.callEndTime = null
+        // this.pauseCount = 0
+        // this.callEndTime = null
         clearInterval(this.timerID)
     }
 
@@ -89,8 +97,12 @@ export default class AssistantWindow extends React.Component {
      */
     async assistantTick() {
         console.log("still ticking")
-        let callQueryParams = {
+        let callerTranscriptQueryParams = {
             TableName: 'contactTranscriptSegments',
+            Key: marshall({ContactId: this.callerID})
+        }
+        let calleeTranscriptQueryParams = {
+            TableName: 'contactTranscriptSegmentsToCustomer',
             Key: marshall({ContactId: this.callerID})
         }
         let callSearchResultQueryParams = {
@@ -99,18 +111,16 @@ export default class AssistantWindow extends React.Component {
         }
         let that = this
 
-        this.dynamoDBClient.send(new GetItemCommand(callQueryParams))
-        .then((result) => {
-            let callDetails = unmarshall(result.Item)
-            if (callDetails['EndTime'] !== that.callEndTime) {
-                that.callEndTime = callDetails['EndTime']
-                that.transcriptBox.current.updateTranscript(callDetails['Transcript'])
-            } else {
-                if (that.pauseCount++ === MAX_CHANGELESS_PINGS) {
-                    that.transcriptBox.current.updateTranscript(
+        this.dynamoDBClient.send(new GetItemCommand(callerTranscriptQueryParams))
+            .then((result) => {
+                let callDetails = unmarshall(result.Item)
+                if (callDetails['HasCompleted'] === undefined) {
+                    that.callEndTime = callDetails['EndTime']
+                    that.callerTranscript.current.updateTranscript(callDetails['Transcript'])
+                } else {
+                    that.callerTranscript.current.updateTranscript(
                         <div>
                             {callDetails['Transcript']}
-                            <br/>
                             <br/>
                             <br/>
                             {END_OF_CALL_STRING}
@@ -118,26 +128,47 @@ export default class AssistantWindow extends React.Component {
                     )
                     that.tickClearer()
                 }
-            }
-        }).catch(err => {
+            }).catch(err => {
             console.log(err)
         })
 
+        this.dynamoDBClient.send(new GetItemCommand(calleeTranscriptQueryParams))
+            .then((result) => {
+                let callDetails = unmarshall(result.Item)
+                if (callDetails['HasCompleted'] === undefined) {
+                    that.callEndTime = callDetails['EndTime']
+                    that.calleeTranscript.current.updateTranscript(callDetails['Transcript'])
+                } else {
+                    that.calleeTranscript.current.updateTranscript(
+                        <div>
+                            {callDetails['Transcript']}
+                            <br/>
+                            <br/>
+                            {END_OF_CALL_STRING}
+                        </div>
+                    )
+                }
+            }).catch(err => {
+                console.log(err)
+        })
+
         this.dynamoDBClient.send(new GetItemCommand(callSearchResultQueryParams))
-        .then((result) => {
-            let searchResults = unmarshall(result.Item)
-            if (searchResults['Keyphrases'] !== undefined) {
-                that.keyPhraseDropdown.current.updateKeyphrases(Array.from(new Set(searchResults['Keyphrases'])))
-            }
-            if (searchResults['RecommendedSOP'] !== undefined) {
-                //TODO Persist the results into 3 fetch buttons
-                that.procedureDropdown.current.updateProcedure(searchResults['RecommendedSOP'].split(',')[0])
-                that.setState({procedureSuggestions: searchResults['RecommendedSOP'].toString()})
-            }
-            if (searchResults['Jurisdiction'] !== undefined && searchResults['Jurisdiction'] !== 'Undetermined') {
-                that.jurisdictionDropdown.current.updateJurisdiction(searchResults['Jurisdiction'])
-            }
-        }).catch((err) => {
+            .then((result) => {
+                let searchResults = unmarshall(result.Item)
+                if (searchResults['Keyphrases'] !== undefined) {
+                    that.keyPhraseDropdown.current.updateKeyphrases(Array.from(new Set(searchResults['Keyphrases'])))
+                }
+                if (searchResults['RecommendedSOP'] !== undefined) {
+                    let buttonResults = searchResults['RecommendedSOP'].split(',')
+                    that.firstSOPButton.current.updateButton(buttonResults[0])
+                    that.secondSOPButton.current.updateButton(buttonResults[1])
+                    that.thirdSOPButton.current.updateButton(buttonResults[2])
+                    that.setState({procedureSuggestions: searchResults['RecommendedSOP'].toString()})
+                }
+                if (searchResults['Jurisdiction'] !== undefined && searchResults['Jurisdiction'] !== 'Undetermined') {
+                    that.jurisdictionDropdown.current.updateJurisdiction(searchResults['Jurisdiction'])
+                }
+            }).catch((err) => {
             console.log(err)
         })
     }
@@ -146,7 +177,7 @@ export default class AssistantWindow extends React.Component {
     /**
      * Stops pinging DynamoDB for data once it has detected that the call is over
      * Also the first step in enabling the feedback button
-     *
+     *  <p/>
      * **AssistantWindow.tickClearer()** ->
      *   App.enableFeedbackButton()   ->
      *   FeedbackButton.enableFeedbackButton()
@@ -155,6 +186,10 @@ export default class AssistantWindow extends React.Component {
         clearInterval(this.timerID)
         this.enableFeedbackButton()
         console.log("tick has been cleared: " + this.timerID.toString())
+    }
+
+    onProcedureDropdownSet(value) {
+        this.manualSOPButton.current.updateButton(value)
     }
 
     /**
@@ -166,25 +201,31 @@ export default class AssistantWindow extends React.Component {
         return (
             <Grid textAlign='center' columns={3} divided verticalAlign='middle'>
                 <Grid.Column computer={8}>
-                    <Segment style={{minHeight: 300, fontSize: 13}}>
-                        <TranscriptBox ref={this.transcriptBox} transcript={''}/>
+                    <Segment style={{minHeight: 180, fontSize: 13}}>
+                        <TranscriptBox ref={this.callerTranscript} transcript={'Caller Transcript'}/>
+                    </Segment>
+                    <Segment style={{minHeight: 180, fontSize: 13}}>
+                        <TranscriptBox ref={this.calleeTranscript} transcript={'Call Taker Transcript'}/>
                     </Segment>
                     <KeyPhraseSearcher ref={this.keyPhraseDropdown}/>
                 </Grid.Column>
                 <Grid.Column>
-                    <Message info
-                             content={"Recommended SOP's are " + this.state.procedureSuggestions}>
-                    </Message>
+                    <Message info content={"Recommended SOP's are:"}/>
+                    <SOPButton ref={this.firstSOPButton} SOP={'....'} enabled={false}/>
+                    <SOPButton ref={this.secondSOPButton} SOP={'....'} enabled={false}/>
+                    <SOPButton ref={this.thirdSOPButton} SOP={'....'} enabled={false}/>
                     <Segment>
-                        <ProcedureSearcher ref={this.procedureDropdown}/>
+                        <ProcedureSearcher ref={this.procedureDropdown} onDropdownSet={this.onProcedureDropdownSet}/>
                     </Segment>
                     <Segment>
                         <JurisdictionSearcher ref={this.jurisdictionDropdown}/>
                     </Segment>
                 </Grid.Column>
                 <Grid.Column computer={2}>
-                    <SubmitButton ref={this.submitButton}
-                                  enableFeedbackButton={this.enableFeedbackButton}/>
+                    <SOPButton ref={this.manualSOPButton} SOP={"Fetch Dropdown SOP"}
+                               enabled={true} enableFeedbackButton={this.enableFeedbackButton}
+                               jurisdiction={this.dropdownJurisdiction}
+                    />
                 </Grid.Column>
             </Grid>
         );

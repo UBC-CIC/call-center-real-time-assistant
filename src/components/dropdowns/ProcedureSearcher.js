@@ -21,6 +21,7 @@ export default class ProcedureSearcher extends React.Component {
                 description: procedure.text
             })
         }
+        this.onDropdownSet = props.onDropdownSet
 
         // Binding the functions to the instance
         this.updateProcedure = this.updateProcedure.bind(this)
@@ -48,11 +49,13 @@ export default class ProcedureSearcher extends React.Component {
 
     /**
      * Handler to re-draw selected value change for the dropdown
+     * Calls another handler in AssistantWindow to update the manual SOP fetch button
      * @param event
      * @param data
      */
     onChange(event, data) {
         this.setState({selectedValue: data.value})
+        this.onDropdownSet(data.value)
     }
 
     /**

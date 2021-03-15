@@ -8,7 +8,7 @@ export default class TranscriptBox extends React.Component {
             visible: true,
             boxData:
                 <div>
-                    Please select a call
+                    {props.transcript}
                 </div>
         };
 
