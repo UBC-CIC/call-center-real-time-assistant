@@ -53,6 +53,7 @@ export default class JurisdictionSearcher extends React.Component {
      */
     onChange(event, data) {
         this.setState({selectedValue: data.value})
+        //TODO jurisdiction dropdown set value needs to send data to ManualSOPButton
         // this.onDropdownset(data.value)
     }
 

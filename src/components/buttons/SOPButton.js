@@ -32,14 +32,20 @@ export default class SOPButton extends React.Component {
      * @param val - Value to update button label with
      */
     updateButton(val) {
-        if(val !== '') {
+        if(val === '....') {
+            // case for default value for when resetting button
+            this.setState({
+                enabled: false,
+                SOP: val
+            })
+        } else if(val !== '') {
             this.setState({
                 enabled: true,
                 SOP: val
             })
         } else {
             this.setState({
-                enabled: true,
+                enabled: false,
                 SOP: 'Fetch Dropdown SOP'
             })
         }

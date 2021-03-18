@@ -56,7 +56,6 @@ export default class AssistantWindow extends React.Component {
     async initialiseDynamoDBClient() {
         this.credentials = await Auth.currentCredentials()
         this.dynamoDBClient = await new DynamoDBClient({
-            //TODO get region from some form of amplify configuration
             region: config.aws_project_region,
             credentials: this.credentials,
         })
@@ -80,12 +79,11 @@ export default class AssistantWindow extends React.Component {
     resetAssistant() {
         this.callerTranscript.current.updateTranscript('')
         this.calleeTranscript.current.updateTranscript('')
-        this.keyPhraseDropdown.current.updateKeyphrases([])
-        this.procedureDropdown.current.updateProcedure('')
+        this.firstSOPButton.current.updateButton('....')
+        this.secondSOPButton.current.updateButton('....')
+        this.thirdSOPButton.current.updateButton('....')
         this.jurisdictionDropdown.current.updateJurisdiction('')
-        this.setState({proceduresPopup: ''})
-        // this.pauseCount = 0
-        // this.callEndTime = null
+        //this.setState({proceduresPopup: ''})
         clearInterval(this.timerID)
     }
 
@@ -223,7 +221,7 @@ export default class AssistantWindow extends React.Component {
                 </Grid.Column>
                 <Grid.Column computer={2}>
                     <SOPButton ref={this.manualSOPButton} SOP={"Fetch Dropdown SOP"}
-                               enabled={true} enableFeedbackButton={this.enableFeedbackButton}
+                               enabled={false} enableFeedbackButton={this.enableFeedbackButton}
                                jurisdiction={this.dropdownJurisdiction}
                     />
                 </Grid.Column>
