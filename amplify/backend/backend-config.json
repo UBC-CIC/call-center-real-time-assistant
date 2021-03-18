@@ -9,5 +9,21 @@
   },
   "storage": {},
   "function": {},
-  "api": {}
+  "api": {
+    "feedbackapi": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authecomm911frontend210ffde2b"
+            }
+          },
+          "additionalAuthenticationProviders": []
+        }
+      }
+    }
+  }
 }

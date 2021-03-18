@@ -4,11 +4,9 @@ import {Button, Form, Grid, Segment, TextArea} from 'semantic-ui-react';
 import AssistantWindow from './AssistantWindow';
 import FeedbackButton from "./buttons/FeedbackButton";
 import CallWindow from "./CallWindow";
-import Amplify from "aws-amplify";
-import config from "../aws-exports";
-import {withAuthenticator, AmplifySignOut} from "@aws-amplify/ui-react";
-
-// Amplify.configure(config);
+import {AmplifySignOut} from "@aws-amplify/ui-react";
+import {createFeedback} from "../graphql/mutations";
+import {API} from "aws-amplify";
 
 
 /**
@@ -101,6 +99,16 @@ export default class AssistantApp extends React.Component {
 
     handleIncorrectFeedbackSubmit() {
         //TODO Adds the virtual assistant prediction and Assistant search results to a feedback table
+        API.graphql({query: createFeedback, variables: {
+            ContactId: "testId123123",
+                FeedbackType: "inaccurate",
+                FeedbackDetails: "Test details",
+                CallerTranscript: "Caller Transcription",
+                CaleeTranscript: "Callee test transcription",
+                Keyphrases: ["keyphrase1","keyphrase 2"],
+                SOP: "test sop",
+                Jurisdiction: "test jurisdiction"
+            }})
     }
 
     handleAmbiguousFeedback() {
@@ -126,7 +134,7 @@ export default class AssistantApp extends React.Component {
                         </Segment>
                         <Segment>
                             <FeedbackButton ref={this.feedbackButton}
-                                            buttonEnabled={this.state.hasCallEnded}
+                                            buttonEnabled={true}
                                             onClick={this.handleFeedbackClick}/>
                         </Segment>
                         {this.state.feedbackSegment}
@@ -141,4 +149,4 @@ export default class AssistantApp extends React.Component {
     }
 }
 
-// export default withAuthenticator(AssistantApp);
+
