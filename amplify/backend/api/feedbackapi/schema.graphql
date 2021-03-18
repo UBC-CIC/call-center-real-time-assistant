@@ -1,0 +1,10 @@
+type Feedback @model {
+    ContactId: String!
+    FeedbackType: String
+    FeedbackDetails: String
+    CallerTranscript:String
+    CaleeTranscript:String
+    Keyphrases:[String]
+    SOP:String
+    Jurisdiction:String
+}
