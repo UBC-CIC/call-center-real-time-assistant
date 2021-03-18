@@ -4,6 +4,7 @@ import {withAuthenticator} from "@aws-amplify/ui-react";
 import React from "react";
 import {BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
 import AssistantApp from "./AssistantApp";
+import Feedback from "./Feedback"
 import {Button} from "semantic-ui-react";
 
 Amplify.configure(config);
@@ -26,8 +27,7 @@ class App extends React.Component {
                                 <AssistantApp/>
                             </Route>
                             <Route exact path="/feedbackApp">
-                                {/*TODO insert feedback app here*/}
-                                <h1>FEEDBACK APP</h1>
+                                <Feedback/>
                             </Route>
                         </Switch>
                     </div>
