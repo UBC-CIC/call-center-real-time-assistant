@@ -23,7 +23,7 @@ export default class AssistantApp extends React.Component {
         super(props);
         this.state = {
             calls: [],
-            hasCallEnded: true,
+            hasCallEnded: false,
             feedbackSegment: <div/>,
             incorrectFeedbackDetailsForm: <div/>
         };
@@ -118,7 +118,7 @@ export default class AssistantApp extends React.Component {
                     FeedbackType: "inaccurate",
                     FeedbackDetails: this.assistantState.feedbackDetails,
                     CallerTranscript: this.assistantState.callerTranscript,
-                    CaleeTranscript: this.assistantState.calleeTranscript,
+                    CalleeTranscript: this.assistantState.calleeTranscript,
                     Keyphrases: this.assistantState.keyphrases,
                     SOP: this.assistantState.firstSOP,
                     Jurisdiction: this.assistantState.jurisdiction
@@ -135,7 +135,7 @@ export default class AssistantApp extends React.Component {
                     FeedbackType: "acceptable",
                     FeedbackDetails: this.assistantState.feedbackDetails,
                     CallerTranscript: this.assistantState.callerTranscript,
-                    CaleeTranscript: this.assistantState.calleeTranscript,
+                    CalleeTranscript: this.assistantState.calleeTranscript,
                     Keyphrases: this.assistantState.keyphrases,
                     SOP: this.assistantState.firstSOP,
                     Jurisdiction: this.assistantState.jurisdiction
@@ -152,7 +152,7 @@ export default class AssistantApp extends React.Component {
                     FeedbackType: "accurate",
                     FeedbackDetails: this.assistantState.feedbackDetails,
                     CallerTranscript: this.assistantState.callerTranscript,
-                    CaleeTranscript: this.assistantState.calleeTranscript,
+                    CalleeTranscript: this.assistantState.calleeTranscript,
                     Keyphrases: this.assistantState.keyphrases,
                     SOP: this.assistantState.firstSOP,
                     Jurisdiction: this.assistantState.jurisdiction
