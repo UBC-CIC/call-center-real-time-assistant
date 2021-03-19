@@ -26,7 +26,7 @@ export default class GridRow extends React.Component {
             this.icon = "check circle"
             this.iconColor = "green"
             }
-        else if (this.props.FeedbackType === "sub-par"){
+        else if (this.props.FeedbackType === "acceptable"){
             this.icon = "warning circle"
             this.iconColor = "yellow"
             }
@@ -79,8 +79,8 @@ export default class GridRow extends React.Component {
                                         {this.props.CallerTranscript}
                                     </Grid.Column>
                                     <Grid.Column>
-                                    <h5>Calee Transcript</h5>
-                                    {this.props.CaleeTranscript}
+                                    <h5>Callee Transcript</h5>
+                                    {this.props.CalleeTranscript}
                                 </Grid.Column>
                                 </Grid.Row>
                                 

@@ -1,9 +1,9 @@
-type Feedback @model {
+type Feedback @aws_cognito_user_pools @model {
     ContactId: String!
     FeedbackType: String
     FeedbackDetails: String
     CallerTranscript:String
-    CaleeTranscript:String
+    CalleeTranscript:String
     Keyphrases:[String]
     SOP:String
     Jurisdiction:String

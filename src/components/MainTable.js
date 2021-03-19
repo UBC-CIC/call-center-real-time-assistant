@@ -39,7 +39,7 @@ export default class MainGrid extends React.Component {
         FeedbackType = {call.FeedbackType} 
         FeedbackDetails = {call.FeedbackDetails}
         CallerTranscript = {call.CallerTranscript} 
-        CaleeTranscript = {call.CaleeTranscript} 
+        CalleeTranscript = {call.CalleeTranscript}
         Keyphrases ={call.Keyphrases}
         Jurisdiction = {call.Jurisdiction}
         handleApproveClick ={this.handleApproveClick}

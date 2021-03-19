@@ -20,6 +20,7 @@ export default class AssistantWindow extends React.Component {
             manualSOPButtonLabel: 'Fetch Dropdown SOP',
             dropdownJurisdiction: ''
         }
+        this.assistantState = this.props.stateHolder
         this.callerID = 'empty'
         this.timerID = null
         this.credentials = null
@@ -116,6 +117,7 @@ export default class AssistantWindow extends React.Component {
                     that.callEndTime = callDetails['EndTime']
                     that.callerTranscript.current.updateTranscript(callDetails['Transcript'])
                 } else {
+                    that.assistantState.callerTranscript = callDetails['Transcript']
                     that.callerTranscript.current.updateTranscript(
                         <div>
                             {callDetails['Transcript']}
@@ -137,6 +139,7 @@ export default class AssistantWindow extends React.Component {
                     that.callEndTime = callDetails['EndTime']
                     that.calleeTranscript.current.updateTranscript(callDetails['Transcript'])
                 } else {
+                    that.assistantState.calleeTranscript = callDetails['Transcript']
                     that.calleeTranscript.current.updateTranscript(
                         <div>
                             {callDetails['Transcript']}
@@ -154,16 +157,23 @@ export default class AssistantWindow extends React.Component {
             .then((result) => {
                 let searchResults = unmarshall(result.Item)
                 if (searchResults['Keyphrases'] !== undefined) {
-                    that.keyPhraseDropdown.current.updateKeyphrases(Array.from(new Set(searchResults['Keyphrases'])))
+                    let keyphraseArray = Array.from(new Set(searchResults['Keyphrases']))
+                    that.assistantState.keyphrases = keyphraseArray
+                    that.keyPhraseDropdown.current.updateKeyphrases(keyphraseArray)
                 }
                 if (searchResults['RecommendedSOP'] !== undefined) {
                     let buttonResults = searchResults['RecommendedSOP'].split(',')
                     that.firstSOPButton.current.updateButton(buttonResults[0])
                     that.secondSOPButton.current.updateButton(buttonResults[1])
                     that.thirdSOPButton.current.updateButton(buttonResults[2])
+
+                    that.assistantState.firstSOP = buttonResults[0]
+                    that.assistantState.secondSOP = buttonResults[1]
+                    that.assistantState.thirdSOP = buttonResults[2]
                     that.setState({procedureSuggestions: searchResults['RecommendedSOP'].toString()})
                 }
                 if (searchResults['Jurisdiction'] !== undefined && searchResults['Jurisdiction'] !== 'Undetermined') {
+                    that.assistantState.jurisdiction = searchResults['Jurisdiction']
                     that.jurisdictionDropdown.current.updateJurisdiction(searchResults['Jurisdiction'])
                 }
             }).catch((err) => {
@@ -209,9 +219,9 @@ export default class AssistantWindow extends React.Component {
                 </Grid.Column>
                 <Grid.Column>
                     <Message info content={"Recommended SOP's are:"}/>
-                    <SOPButton ref={this.firstSOPButton} SOP={'....'} enabled={false}/>
-                    <SOPButton ref={this.secondSOPButton} SOP={'....'} enabled={false}/>
-                    <SOPButton ref={this.thirdSOPButton} SOP={'....'} enabled={false}/>
+                    <SOPButton ref={this.firstSOPButton} SOP={'....'} enabled={false} enableFeedbackButton={this.enableFeedbackButton}/>
+                    <SOPButton ref={this.secondSOPButton} SOP={'....'} enabled={false} enableFeedbackButton={this.enableFeedbackButton}/>
+                    <SOPButton ref={this.thirdSOPButton} SOP={'....'} enabled={false} enableFeedbackButton={this.enableFeedbackButton}/>
                     <Segment>
                         <ProcedureSearcher ref={this.procedureDropdown} onDropdownSet={this.onProcedureDropdownSet}/>
                     </Segment>

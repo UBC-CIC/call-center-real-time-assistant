@@ -7,6 +7,7 @@ import CallWindow from "./CallWindow";
 import {AmplifySignOut} from "@aws-amplify/ui-react";
 import {createFeedback} from "../graphql/mutations";
 import {API} from "aws-amplify";
+import AssistantWindowState from "./AssistantWindowState";
 
 
 /**
@@ -22,10 +23,12 @@ export default class AssistantApp extends React.Component {
         super(props);
         this.state = {
             calls: [],
-            hasCallEnded: false,
+            hasCallEnded: true,
             feedbackSegment: <div/>,
             incorrectFeedbackDetailsForm: <div/>
         };
+        // Variable to hold the state of the assistant window
+        this.assistantState = new AssistantWindowState()
 
         //Refs to access child components
         this.assistantWindow = React.createRef()
@@ -42,18 +45,19 @@ export default class AssistantApp extends React.Component {
     }
 
     /**
-     * Called after a callID is set in the call dropdown
+     * Called after a callID is set in the call dropdown in CallWindow.js
      * Used to update the assistant window (a separate component) with call contents and extracted features
      * @param callerID - Call to view information from
      */
     handleCallerIDSet(callerID) {
+        this.assistantState.contactId = callerID
         this.assistantWindow.current.updateAssistantWindow(callerID)
     }
 
     /**
      * Second step in enabling the feedback button
      *
-     *   SubmitButton.handleClick()   ->
+     *   SOPButton.handleClick()   ->
      * **AssistantApp.enableFeedbackButton()** ->
      *   FeedbackButton.enableFeedbackButton()
      */
@@ -84,40 +88,77 @@ export default class AssistantApp extends React.Component {
     }
 
     handleIncorrectFeedback() {
+        let feedbackDetails = ""
         this.setState({
             incorrectFeedbackDetailsForm:
-                    <Segment>
-                        <Form>
-                            <TextArea placeholder='Please explain what went wrong'/>
-                        </Form>
+                <Segment>
+                    <Form>
+                        <TextArea onChange={(event, data)=> {
+                            feedbackDetails = data.value
+                        }}
+                                  placeholder='Please explain what went wrong'/>
                         <br/>
-                        {/*TODO This button will handle feedback submission*/}
-                        <Button onClick={this.handleIncorrectFeedbackSubmit}>Submit</Button>
-                    </Segment>
+                        <Form.Button onClick={()=> {
+                            console.log(feedbackDetails);
+                            this.assistantState.feedbackDetails = feedbackDetails
+                            this.handleIncorrectFeedbackSubmit()
+                        }}>
+                            Test</Form.Button>
+                        {/*<Button onClick={this.handleIncorrectFeedbackSubmit}>Submit</Button>*/}
+                    </Form>
+                </Segment>
         })
     }
 
     handleIncorrectFeedbackSubmit() {
-        //TODO Adds the virtual assistant prediction and Assistant search results to a feedback table
-        API.graphql({query: createFeedback, variables: {
-            ContactId: "testId123123",
-                FeedbackType: "inaccurate",
-                FeedbackDetails: "Test details",
-                CallerTranscript: "Caller Transcription",
-                CaleeTranscript: "Callee test transcription",
-                Keyphrases: ["keyphrase1","keyphrase 2"],
-                SOP: "test sop",
-                Jurisdiction: "test jurisdiction"
-            }})
+        API.graphql({
+            query: createFeedback, variables: {
+                input: {
+                    ContactId: this.assistantState.contactId,
+                    FeedbackType: "inaccurate",
+                    FeedbackDetails: this.assistantState.feedbackDetails,
+                    CallerTranscript: this.assistantState.callerTranscript,
+                    CaleeTranscript: this.assistantState.calleeTranscript,
+                    Keyphrases: this.assistantState.keyphrases,
+                    SOP: this.assistantState.firstSOP,
+                    Jurisdiction: this.assistantState.jurisdiction
+                }
+            }
+        })
     }
 
     handleAmbiguousFeedback() {
-        // Future developers can expand this to add whatever functionality they wish to add
+        API.graphql({
+            query: createFeedback, variables: {
+                input: {
+                    ContactId: this.assistantState.contactId,
+                    FeedbackType: "acceptable",
+                    FeedbackDetails: this.assistantState.feedbackDetails,
+                    CallerTranscript: this.assistantState.callerTranscript,
+                    CaleeTranscript: this.assistantState.calleeTranscript,
+                    Keyphrases: this.assistantState.keyphrases,
+                    SOP: this.assistantState.firstSOP,
+                    Jurisdiction: this.assistantState.jurisdiction
+                }
+            }
+        })
     }
 
     handleCorrectFeedback() {
-        //TODO Index the current transcript and its prediction results into the search engine
-        // will also submit feedback into the feedback table
+        API.graphql({
+            query: createFeedback, variables: {
+                input: {
+                    ContactId: this.assistantState.contactId,
+                    FeedbackType: "accurate",
+                    FeedbackDetails: this.assistantState.feedbackDetails,
+                    CallerTranscript: this.assistantState.callerTranscript,
+                    CaleeTranscript: this.assistantState.calleeTranscript,
+                    Keyphrases: this.assistantState.keyphrases,
+                    SOP: this.assistantState.firstSOP,
+                    Jurisdiction: this.assistantState.jurisdiction
+                }
+            }
+        })
     }
 
     render() {
@@ -130,11 +171,13 @@ export default class AssistantApp extends React.Component {
                         </Segment>
                         <Segment>
                             <AssistantWindow ref={this.assistantWindow}
-                                             enableFeedbackButton={this.enableFeedbackButton}/>
+                                             enableFeedbackButton={this.enableFeedbackButton}
+                                             stateHolder={this.assistantState}
+                            />
                         </Segment>
                         <Segment>
                             <FeedbackButton ref={this.feedbackButton}
-                                            buttonEnabled={true}
+                                            buttonEnabled={this.state.hasCallEnded}
                                             onClick={this.handleFeedbackClick}/>
                         </Segment>
                         {this.state.feedbackSegment}

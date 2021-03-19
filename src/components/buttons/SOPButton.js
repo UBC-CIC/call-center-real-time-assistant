@@ -11,6 +11,7 @@ export default class SOPButton extends React.Component {
 
         };
         this.dropdown = props.procedureDropdown
+        this.enableFeedbackButton = this.props.enableFeedbackButton
         this.toggleButton = this.toggleButton.bind(this)
         this.handleClick = this.handleClick.bind(this)
     }
@@ -57,6 +58,7 @@ export default class SOPButton extends React.Component {
     handleClick() {
         // TODO Submit button will fetch SOP document via API call from somewhere
         // Use this.state.SOP to make the relevant API call
+        this.enableFeedbackButton()
         console.log(this.state.SOP)
     }
 
