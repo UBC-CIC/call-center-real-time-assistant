@@ -103,8 +103,7 @@ export default class AssistantApp extends React.Component {
                             this.assistantState.feedbackDetails = feedbackDetails
                             this.handleIncorrectFeedbackSubmit()
                         }}>
-                            Test</Form.Button>
-                        {/*<Button onClick={this.handleIncorrectFeedbackSubmit}>Submit</Button>*/}
+                            Submit Feedback</Form.Button>
                     </Form>
                 </Segment>
         })
