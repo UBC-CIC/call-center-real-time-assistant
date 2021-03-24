@@ -1,0 +1,27 @@
+version: 1
+backend:
+  phases:
+    build:
+      commands:
+        - '# Execute Amplify CLI with the helper script'
+        - amplifyPush --simple
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - yarn install
+    build:
+      commands:
+        - aws iam create-policy --policy-name DynamoDBAccessPolicy --policy-document file://src/DynamoDBAccessPolicy.json
+        - export DYNAMODB_POLICY_ARN=$(aws iam list-policies --query "Policies[?PolicyName==`DynamoDBAccessPolicy`].{ARN:Arn}" --output text)
+        - export IDENTITY_POOL_ROLE=${amplify env get --name dev --json | jq .awscloudformation.AuthRoleName}
+        - sudo aws iam attach-role-policy --role-name ${IDENTITY_POOL_ROLE} --policy-arn ${DYNAMODB_POLICY_ARN}
+        - yarn run build
+
+  artifacts:
+    baseDirectory: build
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
