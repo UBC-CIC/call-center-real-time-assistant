@@ -5,23 +5,32 @@ import React from "react";
 import {BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
 import AssistantApp from "./AssistantApp";
 import Feedback from "./Feedback"
-import {Button} from "semantic-ui-react";
+import {Menu} from "semantic-ui-react";
 
 Amplify.configure(config);
 
 class App extends React.Component {
     render() {
+        let navbarState = ''
         return (
             <div>
                 <Router>
                     <div align={'center'}>
-                        <Button attached={"left"}>
-                        <Link to="/assistantApp">Assistant App</Link>
-                        </Button>
-                        <vr/>
-                        <Button attached={"right"}>
-                        <Link to="/feedbackApp">Feedback App</Link>
-                        </Button>
+                        <Menu widths={4}>
+                            <Menu.Item
+                                active={navbarState === 'Assistant App'}
+                                color={'blue'}
+                                onClick={()=> this.navbarState='Assistant App'}
+                            >
+                                <Link to="/assistantApp">Assistant App</Link>
+                            </Menu.Item>
+                            <Menu.Item
+                                active={navbarState === 'Feedback App'}
+                                color={'red'}
+                            >
+                                <Link to="/feedbackApp">Feedback App</Link>
+                            </Menu.Item>
+                        </Menu>
                         <Switch>
                             <Route exact path="/assistantApp">
                                 <AssistantApp/>
