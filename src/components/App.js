@@ -20,7 +20,7 @@ class App extends React.Component {
                             <Menu.Item
                                 active={navbarState === 'Assistant App'}
                                 color={'blue'}
-                                onClick={()=> this.navbarState='Assistant App'}
+                                // onClick={()=> this.navbarState='Assistant App'}
                             >
                                 <Link to="/assistantApp">Assistant App</Link>
                             </Menu.Item>
