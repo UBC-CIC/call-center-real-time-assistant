@@ -15,7 +15,7 @@ frontend:
         - yum install jq -y
         - aws iam create-policy --policy-name DynamoDBAccessPolicy --policy-document file://src/DynamoDBAccessPolicy.json
         - export DYNAMODB_POLICY_ARN=$(aws iam list-policies --query 'Policies[?PolicyName==`DynamoDBAccessPolicy`].{ARN:Arn}' --output text)
-        - export IDENTITY_POOL_ROLE=$(amplify env get --name dev --json | jq .awscloudformation.AuthRoleName)
+        - export IDENTITY_POOL_ROLE=$(amplify env get --name dev --json | jq .awscloudformation.AuthRoleName -r)
         - aws iam attach-role-policy --role-name ${IDENTITY_POOL_ROLE} --policy-arn ${DYNAMODB_POLICY_ARN}
         - yarn run build
 
