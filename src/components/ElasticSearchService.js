@@ -1,15 +1,15 @@
-import AWS from "aws-sdk";
+import {Endpoint, HttpRequest, Signer} from "aws-sdk";
 import {Auth} from "aws-amplify";
 
-var region = 'us-west-2';
-var domain = 'search-transcript-indexer-zumaoft7xahmz2i7b4nxtqr6ge.us-west-2.es.amazonaws.com';
-var index = 'transcripts';
-var type = '_doc';
+const region = 'us-west-2';
+const domain = 'search-transcript-indexer-zumaoft7xahmz2i7b4nxtqr6ge.us-west-2.es.amazonaws.com';
+const index = 'transcripts';
+const type = '_doc';
 
 
 export default async function indexDocument(contactId, document) {
-    var endpoint = new AWS.Endpoint(domain);
-    var request = new AWS.HttpRequest(endpoint, region);
+    let endpoint = new Endpoint(domain);
+    let request = new HttpRequest(endpoint, region);
 
     request.method = 'PUT';
     request.path += index + '/' + type + '/' + contactId;
@@ -18,13 +18,13 @@ export default async function indexDocument(contactId, document) {
     request.headers['Content-Type'] = 'application/json';
     // Content-Length is only needed for DELETE requests that include a request
     // body, but including it for all requests doesn't seem to hurt anything.
-    request.headers['Content-Length'] = Buffer.byteLength(request.body);
+    // request.headers['Content-Length'] = Buffer.byteLength(request.body);
 
     var credentials = await Auth.currentCredentials();
-    var signer = new AWS.Signers.V4(request, 'es');
+    var signer = new Signer.V4(request, 'es');
     signer.addAuthorization(credentials, new Date());
 
-    var client = new AWS.HttpClient();
+    var client = new AWS.();
     client.handleRequest(request, null, function(response) {
         console.log(response.statusCode + ' ' + response.statusMessage);
         var responseBody = '';

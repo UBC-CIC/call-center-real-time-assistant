@@ -13,7 +13,8 @@ frontend:
     build:
       commands:
         - yum install jq -y
-        - aws iam create-policy --policy-name IDPAuthRolePolicy --policy-document file://src/DynamoDBAccessPolicy.json && export AUTH_POLICY_ARN=$(aws iam list-policies --query 'Policies[?PolicyName==`IDPAuthRolePolicy`].{ARN:Arn}' --output text)
+        - export AUTH_POLICY_ARN=$(aws iam list-policies --query 'Policies[?PolicyName==`IDPAuthRolePolicy`].{ARN:Arn}' --output text)
+        - if [ ${#AUTH_POLICY_ARN} == 0 ]; then aws iam create-policy --policy-name IDPAuthRolePolicy --policy-document file://src/DynamoDBAccessPolicy.json && export AUTH_POLICY_ARN=$(aws iam list-policies --query 'Policies[?PolicyName==`IDPAuthRolePolicy`].{ARN:Arn}' --output text)
         - export IDENTITY_POOL_ROLE=$(amplify env get --name dev --json | jq .awscloudformation.AuthRoleName -r)
         - aws iam attach-role-policy --role-name ${IDENTITY_POOL_ROLE} --policy-arn ${AUTH_POLICY_ARN}
         - yarn run build
