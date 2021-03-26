@@ -1,6 +1,7 @@
 import React from "react"
 import { Grid } from 'semantic-ui-react'
 import GridRow from "./GridRow"
+import indexDocument from "./ElasticSearchService";
 
 
 
@@ -21,7 +22,8 @@ export default class MainGrid extends React.Component {
     console.log(id)
   }
 
-  handleApproveClick(id) {
+  handleApproveClick(id, document) {
+    indexDocument(document)
     this.deleteRow(id)
 }
 

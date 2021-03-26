@@ -11,6 +11,12 @@ export default class GridRow extends React.Component {
             dropIcon: 'angle double down',
             expandedDetails: <div></div>,
         }
+        this.document = {
+            "jurisdiction": this.props.Jurisdiction,
+            "key_phrases": this.props.Keyphrases,
+            "procedure": this.props.SOP,
+            "transcript": this.props.CallerTranscript
+        }
 
         this.handleApproveClick = this.props.handleApproveClick
         this.handleDiscardClick = this.props.handleDiscardClick
@@ -110,7 +116,7 @@ export default class GridRow extends React.Component {
                                         expanded={this.state.expanded}/>
                     </Grid.Column>
                     <Grid.Column width={3}>
-                        <AcceptCancelButton handleApproveClick={this.handleApproveClick}
+                        <AcceptCancelButton handleApproveClick={this.handleApproveClick} document={this.document}
                                             handleDiscardClick={this.handleDiscardClick} id={this.props.id}/>
                     </Grid.Column>
                     <Grid.Column>

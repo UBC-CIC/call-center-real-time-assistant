@@ -8,7 +8,7 @@ export default class AcceptDiscardButton extends React.Component {
             <Button.Group compact>
                 <Button
                     color ="green"
-                    onClick = {() => this.props.handleApproveClick(this.props.id)}
+                    onClick = {() => this.props.handleApproveClick(this.props.id, this.props.document)}
                     >Approve</Button>
                 <Button 
                     color = "red"
