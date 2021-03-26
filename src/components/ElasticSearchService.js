@@ -24,17 +24,17 @@ export default async function indexDocument(contactId, document) {
     var signer = new Signer.V4(request, 'es');
     signer.addAuthorization(credentials, new Date());
 
-    var client = new AWS.();
-    client.handleRequest(request, null, function(response) {
-        console.log(response.statusCode + ' ' + response.statusMessage);
-        var responseBody = '';
-        response.on('data', function (chunk) {
-            responseBody += chunk;
-        });
-        response.on('end', function (chunk) {
-            console.log('Response body: ' + responseBody);
-        });
-    }, function(error) {
-        console.log('Error: ' + error);
-    });
+    // var client = new AWS.HttpClient();
+    // client.handleRequest(request, null, function(response) {
+    //     console.log(response.statusCode + ' ' + response.statusMessage);
+    //     var responseBody = '';
+    //     response.on('data', function (chunk) {
+    //         responseBody += chunk;
+    //     });
+    //     response.on('end', function (chunk) {
+    //         console.log('Response body: ' + responseBody);
+    //     });
+    // }, function(error) {
+    //     console.log('Error: ' + error);
+    // });
 }
