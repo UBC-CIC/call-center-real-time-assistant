@@ -23,7 +23,7 @@ export default class MainGrid extends React.Component {
   }
 
   handleApproveClick(id, document) {
-    indexDocument(document)
+    indexDocument(id, document).then(()=> console.log("success in re-indexing")).catch((err)=> console.log(err))
     this.deleteRow(id)
 }
 
