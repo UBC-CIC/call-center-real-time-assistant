@@ -1,5 +1,5 @@
 import React from "react";
-import {Grid, Message, Segment} from "semantic-ui-react";
+import {Button, Grid, Message, Segment} from "semantic-ui-react";
 import TranscriptBox from "./TranscriptBox";
 import KeyPhraseSearcher from "./dropdowns/KeyPhraseSearcher";
 import ProcedureSearcher from "./dropdowns/ProcedureSearcher";
@@ -16,9 +16,12 @@ export default class AssistantWindow extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            firstSOP: '....',
+            secondSOP: '....',
+            thirdSOP: '....',
+            selectedSOP: '',
             procedureSuggestions: '...',
-            manualSOPButtonLabel: 'Fetch Dropdown SOP',
-            dropdownJurisdiction: ''
+            selectedJurisdiction: ''
         }
         this.assistantState = this.props.stateHolder
         this.callerID = 'empty'
@@ -40,11 +43,15 @@ export default class AssistantWindow extends React.Component {
         this.manualSOPButton = React.createRef()
 
         // Binding the AssistantWindow instance to its functions
+
         this.updateAssistantWindow = this.updateAssistantWindow.bind(this)
         this.assistantTick = this.assistantTick.bind(this)
         this.tickClearer = this.tickClearer.bind(this)
         this.resetAssistant = this.resetAssistant.bind(this)
         this.onProcedureDropdownSet = this.onProcedureDropdownSet.bind(this)
+        this.onJurisdictionDropdownSet = this.onJurisdictionDropdownSet.bind(this)
+        this.onSOPButtonClick = this.onSOPButtonClick.bind(this)
+        this.onFetchButtonClick = this.onFetchButtonClick.bind(this)
         this.initialiseDynamoDBClient = this.initialiseDynamoDBClient.bind(this)
         this.initialiseDynamoDBClient().catch(err => console.log("Error in creating dynamo DB: " + err))
     }
@@ -80,9 +87,16 @@ export default class AssistantWindow extends React.Component {
     resetAssistant() {
         this.callerTranscript.current.updateTranscript('')
         this.calleeTranscript.current.updateTranscript('')
-        this.firstSOPButton.current.updateButton('....')
-        this.secondSOPButton.current.updateButton('....')
-        this.thirdSOPButton.current.updateButton('....')
+        // this.firstSOPButton.current.updateButton('....')
+        // this.secondSOPButton.current.updateButton('....')
+        // this.thirdSOPButton.current.updateButton('....')
+        this.setState({
+            firstSOP: '....',
+            secondSOP: '....',
+            thirdSOP: '....',
+            selectedSOP: '',
+            selectedJurisdiction: ''
+        })
         this.jurisdictionDropdown.current.updateJurisdiction('')
         //this.setState({proceduresPopup: ''})
         clearInterval(this.timerID)
@@ -95,7 +109,6 @@ export default class AssistantWindow extends React.Component {
      * components with the data
      */
     async assistantTick() {
-        console.log("still ticking")
         let callerTranscriptQueryParams = {
             TableName: 'contactTranscriptSegments',
             Key: marshall({ContactId: this.callerID})
@@ -150,7 +163,7 @@ export default class AssistantWindow extends React.Component {
                     )
                 }
             }).catch(err => {
-                console.log(err)
+            console.log(err)
         })
 
         this.dynamoDBClient.send(new GetItemCommand(callSearchResultQueryParams))
@@ -167,10 +180,15 @@ export default class AssistantWindow extends React.Component {
                     that.secondSOPButton.current.updateButton(buttonResults[1])
                     that.thirdSOPButton.current.updateButton(buttonResults[2])
 
+                    that.setState({
+                        firstSOP: buttonResults[0],
+                        secondSOP: buttonResults[1],
+                        thirdSOP: buttonResults[2],
+                        procedureSuggestions: searchResults['RecommendedSOP'].toString()
+                    })
                     that.assistantState.firstSOP = buttonResults[0]
                     that.assistantState.secondSOP = buttonResults[1]
                     that.assistantState.thirdSOP = buttonResults[2]
-                    that.setState({procedureSuggestions: searchResults['RecommendedSOP'].toString()})
                 }
                 if (searchResults['Jurisdiction'] !== undefined && searchResults['Jurisdiction'] !== 'Undetermined') {
                     that.assistantState.jurisdiction = searchResults['Jurisdiction']
@@ -197,18 +215,32 @@ export default class AssistantWindow extends React.Component {
     }
 
     onProcedureDropdownSet(value) {
-        this.manualSOPButton.current.updateButton(value)
+        this.setState({selectedSOP: value})
+        // this.manualSOPButton.current.updateButton(value)
+    }
+
+    onJurisdictionDropdownSet(value) {
+        this.setState({selectedJurisdiction: value})
+    }
+
+    onSOPButtonClick(event, data) {
+        this.setState({selectedSOP: data.children})
+    }
+
+    onFetchButtonClick(event, data) {
+        console.log(this.state.selectedSOP)
+        console.log(this.state.selectedJurisdiction)
     }
 
     /**
      * Draws a 3 column grid of the transcript box, keyphrases, SOP, jurisdiction dropdowns and a button
-     * with hardcoded length values
+     * with hardcoded length values in the Grid.column components
      * @returns {JSX.Element}
      */
     render() {
         return (
-            <Grid textAlign='center' columns={3} divided verticalAlign='middle'>
-                <Grid.Column computer={8}>
+            <Grid textAlign='center' columns={3} divided verticalAlign={'middle'}>
+                <Grid.Column computer={7}>
                     <Segment style={{minHeight: 180, fontSize: 13}}>
                         <TranscriptBox ref={this.callerTranscript} transcript={'Caller Transcript'}/>
                     </Segment>
@@ -217,23 +249,48 @@ export default class AssistantWindow extends React.Component {
                     </Segment>
                     <KeyPhraseSearcher ref={this.keyPhraseDropdown}/>
                 </Grid.Column>
-                <Grid.Column>
+                <Grid.Column computer={5} verticalAlign={'top'}>
                     <Message info content={"Recommended SOP's are:"}/>
-                    <SOPButton ref={this.firstSOPButton} SOP={'....'} enabled={false} enableFeedbackButton={this.enableFeedbackButton}/>
-                    <SOPButton ref={this.secondSOPButton} SOP={'....'} enabled={false} enableFeedbackButton={this.enableFeedbackButton}/>
-                    <SOPButton ref={this.thirdSOPButton} SOP={'....'} enabled={false} enableFeedbackButton={this.enableFeedbackButton}/>
+                    <Button basic={this.state.firstSOP !== ''}
+                            disabled={this.state.firstSOP !== ''}
+                            color={'red'} onClick={this.onSOPButtonClick}>
+                        {this.state.firstSOP}
+                    </Button>
+                    <Button basic={this.state.secondSOP !== ''}
+                            disabled={this.state.secondSOP !== ''}  color={'red'} onClick={this.onSOPButtonClick}>
+                        {this.state.secondSOP}
+                    </Button>
+                    <Button basic={this.state.thirdSOP !== ''}
+                            disabled={this.state.thirdSOP !== ''}  color={'red'} onClick={this.onSOPButtonClick}>
+                        {this.state.thirdSOP}
+                    </Button>
+                    {/*<SOPButton ref={this.firstSOPButton} SOP={'....'} enabled={false}*/}
+                    {/*           enableFeedbackButton={this.enableFeedbackButton}/>*/}
+                    {/*<SOPButton ref={this.secondSOPButton} SOP={'....'} enabled={false}*/}
+                    {/*           enableFeedbackButton={this.enableFeedbackButton}/>*/}
+                    {/*<SOPButton ref={this.thirdSOPButton} SOP={'....'} enabled={false}*/}
+                    {/*           enableFeedbackButton={this.enableFeedbackButton}/>*/}
                     <Segment>
                         <ProcedureSearcher ref={this.procedureDropdown} onDropdownSet={this.onProcedureDropdownSet}/>
                     </Segment>
                     <Segment>
-                        <JurisdictionSearcher ref={this.jurisdictionDropdown}/>
+                        <JurisdictionSearcher ref={this.jurisdictionDropdown} onDropdownSet={this.onJurisdictionDropdownSet}/>
                     </Segment>
                 </Grid.Column>
-                <Grid.Column computer={2}>
-                    <SOPButton ref={this.manualSOPButton} SOP={"Fetch Dropdown SOP"}
-                               enabled={false} enableFeedbackButton={this.enableFeedbackButton}
-                               jurisdiction={this.dropdownJurisdiction}
-                    />
+                <Grid.Column computer={4}>
+                    <Segment>
+                        <Button basic={this.state.selectedSOP === '' || this.state.selectedJurisdiction === ''}
+                                disabled={this.state.selectedSOP === ''|| this.state.selectedJurisdiction === ''}
+                                color={'red'} onClick={this.onFetchButtonClick}>
+                            Fetch SOP Document
+                        </Button>
+                    {/*<SOPButton ref={this.manualSOPButton} SOP={"Fetch SOP"}*/}
+                    {/*           enabled={false} enableFeedbackButton={this.enableFeedbackButton}*/}
+                    {/*           jurisdiction={this.selectedJurisdiction}*/}
+                    {/*/>*/}
+                    </Segment>
+                    <Message color={'blue'} content={"Selected SOP: " + this.state.selectedSOP}/>
+                    <Message color={'blue'} content={"Selected Jurisdiction: " + this.state.selectedJurisdiction}/>
                 </Grid.Column>
             </Grid>
         );

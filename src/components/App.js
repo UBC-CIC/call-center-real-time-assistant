@@ -22,20 +22,20 @@ class App extends React.Component {
                                 color={'blue'}
                                 // onClick={()=> this.navbarState='Assistant App'}
                             >
-                                <Link to="/assistantApp">Assistant App</Link>
+                                <Link to="/assistantApp/">Assistant App</Link>
                             </Menu.Item>
                             <Menu.Item
                                 active={navbarState === 'Feedback App'}
                                 color={'red'}
                             >
-                                <Link to="/feedbackApp">Feedback App</Link>
+                                <Link to="/feedbackApp/">Feedback App</Link>
                             </Menu.Item>
                         </Menu>
                         <Switch>
-                            <Route exact path="/assistantApp">
+                            <Route exact path="/assistantApp/">
                                 <AssistantApp/>
                             </Route>
-                            <Route exact path="/feedbackApp">
+                            <Route exact path="/feedbackApp/">
                                 <Feedback/>
                             </Route>
                         </Switch>

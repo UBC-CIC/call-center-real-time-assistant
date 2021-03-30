@@ -47,7 +47,7 @@ export default class SOPButton extends React.Component {
         } else {
             this.setState({
                 enabled: false,
-                SOP: 'Fetch Dropdown SOP'
+                SOP: 'Fetch SOP'
             })
         }
     }
