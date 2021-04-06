@@ -4,7 +4,6 @@ import TranscriptBox from "./TranscriptBox";
 import KeyPhraseSearcher from "./dropdowns/KeyPhraseSearcher";
 import ProcedureSearcher from "./dropdowns/ProcedureSearcher";
 import JurisdictionSearcher from "./dropdowns/JurisdictionSearcher";
-import SOPButton from "./buttons/SOPButton";
 import {DynamoDBClient, GetItemCommand} from "@aws-sdk/client-dynamodb";
 import {marshall, unmarshall} from "@aws-sdk/util-dynamodb";
 import {DYNAMODB_PING_INTERVAL, END_OF_CALL_STRING} from "./Constants";
@@ -40,7 +39,6 @@ export default class AssistantWindow extends React.Component {
         this.firstSOPButton = React.createRef()
         this.secondSOPButton = React.createRef()
         this.thirdSOPButton = React.createRef()
-        this.manualSOPButton = React.createRef()
 
         // Binding the AssistantWindow instance to its functions
 
@@ -87,9 +85,6 @@ export default class AssistantWindow extends React.Component {
     resetAssistant() {
         this.callerTranscript.current.updateTranscript('')
         this.calleeTranscript.current.updateTranscript('')
-        // this.firstSOPButton.current.updateButton('....')
-        // this.secondSOPButton.current.updateButton('....')
-        // this.thirdSOPButton.current.updateButton('....')
         this.setState({
             firstSOP: '....',
             secondSOP: '....',
@@ -98,7 +93,6 @@ export default class AssistantWindow extends React.Component {
             selectedJurisdiction: ''
         })
         this.jurisdictionDropdown.current.updateJurisdiction('')
-        //this.setState({proceduresPopup: ''})
         clearInterval(this.timerID)
     }
 
@@ -176,10 +170,6 @@ export default class AssistantWindow extends React.Component {
                 }
                 if (searchResults['RecommendedSOP'] !== undefined) {
                     let buttonResults = searchResults['RecommendedSOP'].split(',')
-                    that.firstSOPButton.current.updateButton(buttonResults[0])
-                    that.secondSOPButton.current.updateButton(buttonResults[1])
-                    that.thirdSOPButton.current.updateButton(buttonResults[2])
-
                     that.setState({
                         firstSOP: buttonResults[0],
                         secondSOP: buttonResults[1],
@@ -216,7 +206,6 @@ export default class AssistantWindow extends React.Component {
 
     onProcedureDropdownSet(value) {
         this.setState({selectedSOP: value})
-        // this.manualSOPButton.current.updateButton(value)
     }
 
     onJurisdictionDropdownSet(value) {
@@ -233,7 +222,8 @@ export default class AssistantWindow extends React.Component {
     }
 
     /**
-     * Draws a 3 column grid of the transcript box, keyphrases, SOP, jurisdiction dropdowns and a button
+     * Draws a 3 column grid of the two transcript boxes, keyphrase, SOP, jurisdiction dropdowns, 3 recommended SOP
+     * buttons, selected SOP and Jurisdiction info messages and a button to fetch SOP based on selected values
      * with hardcoded length values in the Grid.column components
      * @returns {JSX.Element}
      */
@@ -264,12 +254,6 @@ export default class AssistantWindow extends React.Component {
                             disabled={this.state.thirdSOP !== ''}  color={'red'} onClick={this.onSOPButtonClick}>
                         {this.state.thirdSOP}
                     </Button>
-                    {/*<SOPButton ref={this.firstSOPButton} SOP={'....'} enabled={false}*/}
-                    {/*           enableFeedbackButton={this.enableFeedbackButton}/>*/}
-                    {/*<SOPButton ref={this.secondSOPButton} SOP={'....'} enabled={false}*/}
-                    {/*           enableFeedbackButton={this.enableFeedbackButton}/>*/}
-                    {/*<SOPButton ref={this.thirdSOPButton} SOP={'....'} enabled={false}*/}
-                    {/*           enableFeedbackButton={this.enableFeedbackButton}/>*/}
                     <Segment>
                         <ProcedureSearcher ref={this.procedureDropdown} onDropdownSet={this.onProcedureDropdownSet}/>
                     </Segment>
@@ -284,10 +268,6 @@ export default class AssistantWindow extends React.Component {
                                 color={'red'} onClick={this.onFetchButtonClick}>
                             Fetch SOP Document
                         </Button>
-                    {/*<SOPButton ref={this.manualSOPButton} SOP={"Fetch SOP"}*/}
-                    {/*           enabled={false} enableFeedbackButton={this.enableFeedbackButton}*/}
-                    {/*           jurisdiction={this.selectedJurisdiction}*/}
-                    {/*/>*/}
                     </Segment>
                     <Message color={'blue'} content={"Selected SOP: " + this.state.selectedSOP}/>
                     <Message color={'blue'} content={"Selected Jurisdiction: " + this.state.selectedJurisdiction}/>
