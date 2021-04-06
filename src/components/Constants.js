@@ -39,6 +39,8 @@ export const JURISDICTIONS = [
     {key: 'DPD', value: 'Delta'},
 ]
 
+export const DEFAULT_SOP_BUTTON_VALUE = '....'
+
 export const DYNAMODB_PING_INTERVAL = 990 //In milliseconds
 
 // export var AWS_REGION = 15

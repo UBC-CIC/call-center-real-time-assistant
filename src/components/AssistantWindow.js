@@ -6,7 +6,7 @@ import ProcedureSearcher from "./dropdowns/ProcedureSearcher";
 import JurisdictionSearcher from "./dropdowns/JurisdictionSearcher";
 import {DynamoDBClient, GetItemCommand} from "@aws-sdk/client-dynamodb";
 import {marshall, unmarshall} from "@aws-sdk/util-dynamodb";
-import {DYNAMODB_PING_INTERVAL, END_OF_CALL_STRING} from "./Constants";
+import {DEFAULT_SOP_BUTTON_VALUE, DYNAMODB_PING_INTERVAL, END_OF_CALL_STRING} from "./Constants";
 import config from "../aws-exports";
 import {Auth} from "aws-amplify";
 
@@ -15,9 +15,9 @@ export default class AssistantWindow extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            firstSOP: '....',
-            secondSOP: '....',
-            thirdSOP: '....',
+            firstSOP: DEFAULT_SOP_BUTTON_VALUE,
+            secondSOP: DEFAULT_SOP_BUTTON_VALUE,
+            thirdSOP: DEFAULT_SOP_BUTTON_VALUE,
             selectedSOP: '',
             procedureSuggestions: '...',
             selectedJurisdiction: ''
@@ -36,9 +36,6 @@ export default class AssistantWindow extends React.Component {
         this.keyPhraseDropdown = React.createRef()
         this.procedureDropdown = React.createRef()
         this.jurisdictionDropdown = React.createRef()
-        this.firstSOPButton = React.createRef()
-        this.secondSOPButton = React.createRef()
-        this.thirdSOPButton = React.createRef()
 
         // Binding the AssistantWindow instance to its functions
 
@@ -86,9 +83,9 @@ export default class AssistantWindow extends React.Component {
         this.callerTranscript.current.updateTranscript('')
         this.calleeTranscript.current.updateTranscript('')
         this.setState({
-            firstSOP: '....',
-            secondSOP: '....',
-            thirdSOP: '....',
+            firstSOP: DEFAULT_SOP_BUTTON_VALUE,
+            secondSOP: DEFAULT_SOP_BUTTON_VALUE,
+            thirdSOP: DEFAULT_SOP_BUTTON_VALUE,
             selectedSOP: '',
             selectedJurisdiction: ''
         })
@@ -241,17 +238,19 @@ export default class AssistantWindow extends React.Component {
                 </Grid.Column>
                 <Grid.Column computer={5} verticalAlign={'top'}>
                     <Message info content={"Recommended SOP's are:"}/>
-                    <Button basic={this.state.firstSOP !== ''}
-                            disabled={this.state.firstSOP !== ''}
+                    <Button basic={this.state.firstSOP === DEFAULT_SOP_BUTTON_VALUE}
+                            disabled={this.state.firstSOP === DEFAULT_SOP_BUTTON_VALUE}
                             color={'red'} onClick={this.onSOPButtonClick}>
                         {this.state.firstSOP}
                     </Button>
-                    <Button basic={this.state.secondSOP !== ''}
-                            disabled={this.state.secondSOP !== ''}  color={'red'} onClick={this.onSOPButtonClick}>
+                    <Button basic={this.state.secondSOP === DEFAULT_SOP_BUTTON_VALUE}
+                            disabled={this.state.secondSOP === DEFAULT_SOP_BUTTON_VALUE}  color={'red'}
+                            onClick={this.onSOPButtonClick}>
                         {this.state.secondSOP}
                     </Button>
-                    <Button basic={this.state.thirdSOP !== ''}
-                            disabled={this.state.thirdSOP !== ''}  color={'red'} onClick={this.onSOPButtonClick}>
+                    <Button basic={this.state.thirdSOP === DEFAULT_SOP_BUTTON_VALUE}
+                            disabled={this.state.thirdSOP === DEFAULT_SOP_BUTTON_VALUE}  color={'red'}
+                            onClick={this.onSOPButtonClick}>
                         {this.state.thirdSOP}
                     </Button>
                     <Segment>
