@@ -21,7 +21,7 @@ export default class JurisdictionSearcher extends React.Component {
             })
         }
 
-        this.onDropdownSet = props.onDropdownSet
+        this.onDropdownSet = props.onJurisdictionDropdownSet
         // Binding the functions to the instance
         // this.onDropdownSet = this.onDropdownSet.bind(this)
         this.updateJurisdiction = this.updateJurisdiction.bind(this)
