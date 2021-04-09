@@ -9,7 +9,7 @@ const index = 'transcripts';
 
 export default async function indexDocument(contactId, document) {
 
-    let esUrl = `http://${domain}/${index}/_doc/${contactId}`;
+    let esUrl = `https://${domain}/${index}/_doc/${contactId}`;
     let signedRequest = await signRequest(esUrl, document)
     let credentials = await Auth.currentCredentials();
 
@@ -17,7 +17,6 @@ export default async function indexDocument(contactId, document) {
         credentials: credentials
     })
     console.log(signedRequest)
-
 
 
     let apiInfo = {

@@ -8,6 +8,7 @@ export default class AssistantWindowState {
         this.firstSOP = ""
         this.secondSOP = ""
         this.thirdSOP = ""
+        this.selectedSOP = ""
         this.jurisdiction = ""
         this.feedbackDetails = ""
     }

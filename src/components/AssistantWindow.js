@@ -204,10 +204,12 @@ export default class AssistantWindow extends React.Component {
 
     onProcedureDropdownSet(value) {
         this.setState({selectedSOP: value})
+        this.assistantState.selectedSOP
     }
 
     onJurisdictionDropdownSet(value) {
         this.setState({selectedJurisdiction: value})
+        this.assistantState.jurisdiction = value
     }
 
     onSOPButtonClick(event, data) {
