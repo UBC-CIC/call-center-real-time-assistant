@@ -79,7 +79,6 @@ export default async function indexDocument(contactId, document) {
 }
 
 function signRequest(url, data) {
-
     return Auth.currentCredentials()
         .then(credentials => {
             let cred = Auth.essentialCredentials(credentials);
@@ -89,7 +88,7 @@ function signRequest(url, data) {
             let params = {
                 hostname: domain,
                 headers: {
-                    'host': domain,
+                    'Host': domain,
                     'Content-Type': 'application/json',
                     // 'Access-Control-Allow-Origin': '*',
                     // 'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
