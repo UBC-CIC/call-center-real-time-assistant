@@ -180,6 +180,7 @@ export default class AssistantWindow extends React.Component {
                 if (searchResults['Jurisdiction'] !== undefined && searchResults['Jurisdiction'] !== 'Undetermined') {
                     that.assistantState.jurisdiction = searchResults['Jurisdiction']
                     that.jurisdictionDropdown.current.updateJurisdiction(searchResults['Jurisdiction'])
+                    that.setState({selectedJurisdiction: searchResults['Jurisdiction']})
                 }
             }).catch((err) => {
             console.log(err)

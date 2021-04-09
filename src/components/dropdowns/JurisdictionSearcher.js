@@ -21,9 +21,8 @@ export default class JurisdictionSearcher extends React.Component {
             })
         }
 
-        this.onDropdownSet = props.onJurisdictionDropdownSet
+        this.onDropdownSet = props.onDropdownSet
         // Binding the functions to the instance
-        // this.onDropdownSet = this.onDropdownSet.bind(this)
         this.updateJurisdiction = this.updateJurisdiction.bind(this)
         this.getSelectedValue = this.getSelectedValue.bind(this)
         this.onChange = this.onChange.bind(this)
@@ -48,14 +47,13 @@ export default class JurisdictionSearcher extends React.Component {
     }
 
     /**
-     * Handler to re-draw dropdown when value filled
+     * Handler to re-draw dropdown when value filled via UI
      * Also calls a handler in AssistantWindow to pass the selected value there
      * @param event
      * @param data
      */
     onChange(event, data) {
         this.setState({selectedValue: data.value})
-        //TODO jurisdiction dropdown set value needs to send data to ManualSOPButton
         this.onDropdownSet(data.value)
     }
 

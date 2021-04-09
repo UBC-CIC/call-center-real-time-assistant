@@ -27,7 +27,12 @@ export default class AssistantApp extends React.Component {
             feedbackSegment: <div/>,
             incorrectFeedbackDetailsForm: <div/>
         };
-        // Variable to hold the state of the assistant window
+        /**
+         * Variable to hold the state of the assistant window
+         * This property holds all the metadata of a specific call that is selected, it is passed
+         * down to sub-components where necessary and updated there as well. After the call is over, this
+         * object will have upto-date information on call metadata
+         */
         this.assistantState = new AssistantWindowState()
 
         //Refs to access child components
