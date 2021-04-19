@@ -13,9 +13,9 @@ between the currently transcribed call and transcripts of audio call files provi
 
 ## Stack Documentation and Deployment Guides
 
-[Audio Processing Backend Stack Deployment](https://github.com/UBC-CIC/ecomm-911-historical-audio-processing/blob/master/backend/backend-README.md)
-[Audio Processing Frontend Stack Deployment](https://github.com/UBC-CIC/ecomm-911-historical-audio-processing/blob/master/frontend-README.md)
-[Real-Time Assistant Backend Stack Deployment](backend/backend-README.md)\
+[Audio Processing Backend Stack Deployment](https://github.com/UBC-CIC/ecomm-911-historical-audio-processing/blob/master/backend/backend-README.md) \
+[Audio Processing Frontend Stack Deployment](https://github.com/UBC-CIC/ecomm-911-historical-audio-processing/blob/master/frontend-README.md) \
+[Real-Time Assistant Backend Stack Deployment](backend/backend-README.md) \
 [Real-Time Assistant Frontend Stack Deployment](frontend-README.md)
 
 ## Credits
