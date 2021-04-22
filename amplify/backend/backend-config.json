@@ -8,7 +8,22 @@
     }
   },
   "storage": {},
-  "function": {},
+  "function": {
+    "indexer": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "ecomm911frontend210ffde2b",
+          "attributes": [
+            "UserPoolId"
+          ]
+        }
+      ]
+    }
+  },
   "api": {
     "feedbackapi": {
       "service": "AppSync",

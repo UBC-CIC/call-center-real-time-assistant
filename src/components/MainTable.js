@@ -2,6 +2,7 @@ import React from "react"
 import {Grid} from 'semantic-ui-react'
 import GridRow from "./GridRow"
 import indexDocument from "./ElasticSearchService";
+import invokeLambda from "./LambdaInvoker";
 
 
 export default class MainGrid extends React.Component {
@@ -22,7 +23,7 @@ export default class MainGrid extends React.Component {
     }
 
     handleApproveClick(id, document) {
-        indexDocument(id, document).then(() => console.log("success in re-indexing")).catch((err) => console.log(err))
+        invokeLambda(document).then(() => console.log("success in re-indexing")).catch((err) => console.log(err))
         // this.deleteRow(id)
     }
 

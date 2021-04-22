@@ -12,10 +12,12 @@ export default class GridRow extends React.Component {
             expandedDetails: <div></div>,
         }
         this.document = {
+            "contactId": this.props.ContactId,
             "jurisdiction": this.props.Jurisdiction,
             "key_phrases": this.props.Keyphrases,
             "procedure": this.props.SOP,
-            "transcript": this.props.CallerTranscript
+            "caller_transcript": this.props.CallerTranscript,
+            "callee_transcript": this.props.CalleeTranscript
         }
 
         this.handleApproveClick = this.props.handleApproveClick

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "auth": {
+      "ecomm911frontend210ffde2b": [
+        "read"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

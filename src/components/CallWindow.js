@@ -4,6 +4,7 @@ import {DynamoDBClient, ScanCommand} from "@aws-sdk/client-dynamodb";
 import {unmarshall} from "@aws-sdk/util-dynamodb";
 import {Auth} from "aws-amplify";
 import config from "../aws-exports";
+import invokeLambda from "./LambdaInvoker"
 
 
 const queryParams = {
@@ -72,6 +73,17 @@ export default class CallWindow extends React.Component {
         }).catch(err => {
             console.log(err)
         })
+
+        invokeLambda({
+            "contactId": "testContactId",
+            "caller_transcript": "test caller transcript",
+            "callee_transcript": "test callee transcript",
+            "procedure": "test procedure",
+            "jurisdiction": "test jurisdiction",
+            "key_phrases": "test keyphrases"
+        })
+            .then((res) => console.log(res)).catch((err) => console.log(err))
+
     }
 
     /**
