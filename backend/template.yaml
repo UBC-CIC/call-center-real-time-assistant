@@ -592,7 +592,8 @@ Resources:
     Properties:
       Name: "ESDomainName"
       Type: String
-      Value: !Sub "${audioFileTranscribeStack}-ESDomainName"
+      Value:
+        Fn::ImportValue: !Sub "${audioFileTranscribeStack}-ESDomainName"
 
   CallerTableName:
     Type: "AWS::SSM::Parameter"

@@ -10,6 +10,7 @@ src = {editable = true, path = "./src"}
 certifi = "*"
 aws-requests-auth = "*"
 elasticsearch = "*"
+requests-aws4auth = "*"
 
 [requires]
 python_version = "3.8"
