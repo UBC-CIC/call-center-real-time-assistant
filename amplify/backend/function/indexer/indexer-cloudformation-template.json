@@ -231,10 +231,12 @@
             {
               "Effect": "Allow",
               "Action": [
-                "es:ESHttpHead",
-                "es:ESHttpPost",
+                "es:DescribeElasticsearchDomain",
+                "es:ESHttpPut",
+                "es:ESHttpDelete",
                 "es:ESHttpGet",
-                "es:ESHttpPut"
+                "es:ESHttpHead",
+                "es:ESHttpPost"
               ],
               "Resource": [
                 {
