@@ -5,7 +5,7 @@ The second half of the E-Comm 911 call center virtual assistant proof of concept
 resources that receives and transcribes the incoming caller and call taker audio from the AWS Connect instance in 
 real time, and queries the results against the Elasticsearch Cluster deployed in the previous stack to retrieve the 
 most appropriate Standard Operating Procedure for based on document similarity. This portion of the solution leverages 
-Amazon Connect, Amazon Transcribe, Amazon Comprehend, AWS Lambda DynamoDB, and (indirectly) Amazon Kinesis Video Streams.
+Amazon Connect, Amazon Transcribe, Amazon Comprehend, AWS Lambda, DynamoDB, and (indirectly) Amazon Kinesis Video Streams.
 
 ## Deployment Steps
 1) Create an S3 bucket to upload deployment files with the following command, or re-use the same bucket you created in 
@@ -33,7 +33,7 @@ aws cloudformation deploy --capabilities CAPABILITY_IAM --template ./template.ya
    `<STACK-NAME>-createS3bucket-XXXXXXXXXX`, the bucket name is also in the Outputs tab of this Cloudformation stack in 
    the Cloudformation Console) and will contain a sample contact flow to be imported into AWS Connect. 
    Navigate to the newly created S3 bucket and download the contact flow, which is essentially a JSON file.
-7) Login to your AWS Connect instance. Select **Contact Flows** under Routing on the left sidebar, and click 
+7) Login to your Amazon Connect instance. Select **Contact Flows** under Routing on the left sidebar, and click 
    on **Create Contact Flow**.
 ![alt text](../documentation_images/create-contact-flow.png)
 8) Select **Import flow (beta)** under the Save dropdown and select the downloaded file. Save and publish.
