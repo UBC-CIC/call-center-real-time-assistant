@@ -251,7 +251,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":domain/*/*"
+                      ":domain/*"
                     ]
                   ]
                 }
