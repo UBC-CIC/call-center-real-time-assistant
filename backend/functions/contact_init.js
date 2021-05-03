@@ -4,9 +4,12 @@
 
 var AWS = require("aws-sdk");
 var docClient = new AWS.DynamoDB.DocumentClient();
+const DYNAMODB_DOC_EXPIRY_HOURS = 6
 
 /**
- * Entry point for the lambda function
+ * Lambda function that is triggered via Amazon Connect event when a call is made. This function
+ * creates a DynamoDB entry for the call metadata (such as id, caller phone number, call date and time-to-live for the
+ * DynamoDB document)
  */
 exports.handler = (event, context, callback) => {
     console.log("Event From Amazon Connect: " + JSON.stringify(event));
@@ -19,7 +22,7 @@ exports.handler = (event, context, callback) => {
     let tableName = process.env.table_name;
     let currentTimeStamp = new Date().toString();
     let currentDate = new Date().toLocaleDateString();
-    let TTL = Math.round(Date.now() / 1000) + 6 * 3600;
+    let TTL = Math.round(Date.now() / 1000) + DYNAMODB_DOC_EXPIRY_HOURS * 3600;
 
     //set up the database query to be used to update the customer information record in DynamoDB
     var paramsUpdate = {
@@ -73,6 +76,11 @@ function buildResponse(isSuccess, data) {
     }
 }
 
+/**
+ * Creates temporary STS credentials
+ * @param callback
+ * @param contactId
+ */
 function getTempCredentials(callback, contactId){
     var params = {
         DurationSeconds: 900,

@@ -9,7 +9,7 @@ export default class GridRow extends React.Component {
         this.state = {
             expanded: props.expanded,
             dropIcon: 'angle double down',
-            expandedDetails: <div></div>,
+            expandedDetails: <div/>,
         }
         this.document = {
             "contactId": this.props.ContactId,
@@ -62,20 +62,20 @@ export default class GridRow extends React.Component {
                 return {
                     expanded: "true",
                     dropIcon: 'angle double down',
-                    expandedDetails: <div></div>
+                    expandedDetails: <div/>
                 }
             } else {
-                const KeyphrasesSeperated = this.props.Keyphrases.map(phrase => <Label>{phrase}</Label>)
+                const keyphrasesSeparated = this.props.Keyphrases.map(phrase => <Label>{phrase}</Label>)
                 return {
                     expanded: "false",
                     dropIcon: 'angle double up',
                     expandedDetails:
                         <Grid.Row columns={4} divided>
-                            <Grid.Column width={1}></Grid.Column>
+                            <Grid.Column width={1}/>
                             <Grid.Column>
                                 {this.renderFeedbackDetails(this.props.FeedbackDetails)}
                                 <h5>Key Phrases</h5>
-                                {KeyphrasesSeperated}
+                                {keyphrasesSeparated}
                             </Grid.Column>
                             <Grid.Column>
                                 <h5>Caller Transcript</h5>

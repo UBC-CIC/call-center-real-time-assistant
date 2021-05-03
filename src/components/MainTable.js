@@ -24,7 +24,7 @@ export default class MainGrid extends React.Component {
 
     handleApproveClick(id, document) {
         invokeLambda(document).then(() => console.log("success in re-indexing")).catch((err) => console.log(err))
-        // this.deleteRow(id)
+        this.deleteRow(id)
     }
 
     handleDiscardClick(id) {

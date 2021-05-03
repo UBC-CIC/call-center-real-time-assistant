@@ -24,7 +24,8 @@ function createContactFlow(properties, callback) {
 }
 
 /**
- * Lambda entry-point, creates a Contact flow and uploads it to S3, returning the response of said operation
+ * Lambda function that creates a Contact flow and uploads it to S3, returning the response of said operation.
+ * This is run just once after deployment to help setup the stack
  */
 createContactFlow.handler = function(event, context) {
     console.log(JSON.stringify(event, null, '  '));

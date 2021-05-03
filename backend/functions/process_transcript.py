@@ -1,19 +1,13 @@
 import boto3
-import time
 import os
-import string
-import random
-
 from elasticsearch import Elasticsearch, RequestsHttpConnection
-import requests
-from aws_requests_auth.aws_auth import AWSRequestsAuth
 from requests_aws4auth import AWS4Auth
 
 # Get AWS Clients
 COMPREHEND = boto3.client(service_name='comprehend')
 DYNAMODB = boto3.resource('dynamodb')
 # dynamodb_client = boto3.client(service_name='dynamodb')
-es_client = boto3.client('es')
+ES_CLIENT = boto3.client('es')
 
 TRANSCRIPT_INDEX = 'transcripts'
 
@@ -34,16 +28,16 @@ def connectES():
     """
     Connects to the ElasticSearch domain with the specific credentials and returns a searchable domain
     """
-    awsauth = AWS4Auth(CREDENTIALS.access_key,
-                       CREDENTIALS.secret_key,
-                       REGION, SERVICE,
-                       session_token=CREDENTIALS.token)
+    aws_auth = AWS4Auth(CREDENTIALS.access_key,
+                        CREDENTIALS.secret_key,
+                        REGION, SERVICE,
+                        session_token=CREDENTIALS.token)
     try:
-        response = es_client.describe_elasticsearch_domain(DomainName=DOMAIN_NAME)
+        response = ES_CLIENT.describe_elasticsearch_domain(DomainName=DOMAIN_NAME)
         es_host = response['DomainStatus']['Endpoint']
-        es = Elasticsearch(hosts=[{'host': es_host, 'port': 443}], http_auth=awsauth,
-                           use_ssl=True, verify_certs=True, connection_class=RequestsHttpConnection)
-        return es
+        es_service_client = Elasticsearch(hosts=[{'host': es_host, 'port': 443}], http_auth=aws_auth,
+                                          use_ssl=True, verify_certs=True, connection_class=RequestsHttpConnection)
+        return es_service_client
     except Exception as err:
         print("Unable to connect to ElasticSearch")
         print(err)
@@ -52,10 +46,10 @@ def connectES():
 
 def parse_jurisdiction(keyphrases):
     """
-    Searches for pre-defined jurisdictions amongst the keyphrases (as substrings too), and returns
-    the jurisdiction code if found
+    Searches for pre-defined jurisdictions amongst the input keyphrases (as substrings too), and returns
+    the first jurisdiction acronym if found
     :param keyphrases:
-    :return:
+    :return: Jurisdiction acronym of the first jurisdiction detected
     """
     jurisdiction_code = ''
     for jurisdiction_item in JURISDICTIONS:
@@ -82,31 +76,30 @@ def handler(event, context):
         if record.get('eventName') in ('INSERT', 'MODIFY'):
             # Retrieve the item attributes from the stream record
             contact_id = record['dynamodb']['NewImage']['ContactId']['S']
-            start_time = record['dynamodb']['NewImage']['StartTime']['N']
             end_time = record['dynamodb']['NewImage']['EndTime']['N']
             caller_transcript = record['dynamodb']['NewImage']['Transcript']['S']
-            # is_partial = record['dynamodb']['NewImage']['IsPartial']['BOOL']
 
             key_phrases = []
-            SOPs = []
+            SOP_list = []
             keyphrase_list = []
             syntax_tokens = []
 
             # Designate a time period within the realtime call to call comprehend and query ES
-            if 10 <= float(end_time) <= 120:
+            if 15 <= float(end_time) <= 120:
 
                 call_taker_table = DYNAMODB.Table(CALL_TAKER_TABLE)
-                query_result = call_taker_table.get_item(Key={"ContactId": contact_id}, ProjectionExpression="Transcript")
+                query_result = call_taker_table.get_item(Key={"ContactId": contact_id},
+                                                         ProjectionExpression="Transcript")
 
                 try:
                     callee_transcript = query_result['Item']['Transcript']
                 except KeyError as err:
                     callee_transcript = ''
 
-                keyphrases_result = COMPREHEND \
-                    .batch_detect_key_phrases(TextList=[caller_transcript, callee_transcript], LanguageCode='en')
-                syntax_result = COMPREHEND \
-                    .batch_detect_syntax(TextList=[caller_transcript, callee_transcript], LanguageCode='en')
+                keyphrases_result = COMPREHEND.batch_detect_key_phrases(TextList=[caller_transcript, callee_transcript],
+                                                                        LanguageCode='en')
+                syntax_result = COMPREHEND.batch_detect_syntax(TextList=[caller_transcript, callee_transcript],
+                                                               LanguageCode='en')
 
                 for result in keyphrases_result["ResultList"]:
                     keyphrase_list += result["KeyPhrases"]
@@ -148,9 +141,9 @@ def handler(event, context):
                 top_hits = hits[:3] if len(hits) > 3 else hits
 
                 for hit in top_hits:
-                    SOPs.append(hit['_source']['procedure'])
+                    SOP_list.append(hit['_source']['procedure'])
 
-                SOP = ', '.join(SOPs) if len(SOPs) > 0 else 'Undetermined'
+                SOP = ', '.join(SOP_list) if len(SOP_list) > 0 else 'Undetermined'
 
                 jurisdiction = parse_jurisdiction(key_phrases)
 

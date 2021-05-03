@@ -4,19 +4,14 @@
 
 'use strict';
 const AWS = require('aws-sdk');
-const lambda = new AWS.Lambda();
+const LAMBDA_CLIENT = new AWS.Lambda();
 
 /**
  * Lambda function entry point, takes the audio data from the Kinesis Video stream resource
  * and passes that as a parameter to invoke another Lambda function, the transcription Function
- * @param event
- * @param context
- * @param callback
  */
 exports.handler = (event, context, callback) => {
-
     console.log("Received event from Amazon Connect " + JSON.stringify(event));
-
     let payload = "";
 
     if (event.eventType) {
@@ -30,12 +25,12 @@ exports.handler = (event, context, callback) => {
             streamARN: event.Details.ContactData.MediaStreams.Customer.Audio.StreamARN,
             startFragmentNum: event.Details.ContactData.MediaStreams.Customer.Audio.StartFragmentNumber,
             connectContactId: event.Details.ContactData.ContactId,
-            transcriptionEnabled: event.Details.ContactData.Attributes.transcribeCall === "true" ? true : false,
-            saveCallRecording: event.Details.ContactData.Attributes.saveCallRecording === "false" ? false : true,
+            transcriptionEnabled: event.Details.ContactData.Attributes.transcribeCall === "true",
+            saveCallRecording: event.Details.ContactData.Attributes.saveCallRecording !== "false",
             languageCode: event.Details.ContactData.Attributes.languageCode === "es-US" ? "es-US" : "en-US",
-            // These default to true for backwards compatability purposes
-            streamAudioFromCustomer: event.Details.ContactData.Attributes.streamAudioFromCustomer === "false" ? false : true,
-            streamAudioToCustomer: event.Details.ContactData.Attributes.streamAudioToCustomer === "false" ? false : true
+            // These default to true for backwards compatibility purposes
+            streamAudioFromCustomer: event.Details.ContactData.Attributes.streamAudioFromCustomer !== "false",
+            streamAudioToCustomer: event.Details.ContactData.Attributes.streamAudioToCustomer !== "false"
         };
     }
 
@@ -50,7 +45,7 @@ exports.handler = (event, context, callback) => {
         'InvokeArgs': JSON.stringify(payload)
     };
 
-    lambda.invokeAsync(params, function(err, data) {
+    LAMBDA_CLIENT.invokeAsync(params, function(err, data) {
         if (err) {
             throw (err);
         } else {
