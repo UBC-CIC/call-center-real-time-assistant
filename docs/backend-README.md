@@ -1,9 +1,9 @@
 # E-Comm 911 Real-Time Assistant (Part 2)
 
 ## Project Overview
-The second half of the E-Comm 911 call center virtual assistant proof of concept - this stack initializes the 
+The second half of the E-Comm 911 call center virtual assistant Proof of Concept - this stack initializes the 
 resources that receives and transcribes the incoming caller and call taker audio from the AWS Connect instance in 
-real time, and queries the results against the Elasticsearch Cluster deployed in the previous stack to retrieve the 
+near-real time, and queries the results against the Elasticsearch Cluster deployed in the previous stack to retrieve the 
 most appropriate Standard Operating Procedure for based on document similarity. This portion of the solution leverages 
 Amazon Connect, Amazon Transcribe, Amazon Comprehend, AWS Lambda, DynamoDB, and (indirectly) Amazon Kinesis Video Streams.
 
@@ -19,7 +19,7 @@ aws s3api create-bucket --bucket <YOUR-BUCKET-NAME> --create-bucket-configuratio
    contact flow blocks that are required in the contact flows (workflow once an Amazon Connect number is called). 
    Instructions for enabling this can be 
    found [here](https://docs.aws.amazon.com/connect/latest/adminguide/enable-live-media-streams.html).
-4) Clone the git repository into your local directory if you haven't already. Within this directory, cd into 
+4) Clone the git repository into your local directory if you haven't already. Within this directory, change directory into 
    the ```./backend/deployment``` folder, and run the following command to upload the zipped lambdas to your bucket:
 ```
 aws s3 sync . s3://<YOUR-BUCKET-NAME>/deployment --region <YOUR-REGION> --profile <YOUR-PROFILE>
@@ -35,13 +35,13 @@ aws cloudformation deploy --capabilities CAPABILITY_IAM --template ./template.ya
    Navigate to the newly created S3 bucket and download the contact flow, which is essentially a JSON file.
 7) Login to your Amazon Connect instance. Select **Contact Flows** under Routing on the left sidebar, and click 
    on **Create Contact Flow**.
-![alt text](../documentation_images/create-contact-flow.png)
+![alt text](create-contact-flow.png)
 8) Select **Import flow (beta)** under the Save dropdown and select the downloaded file. Save and publish.
-![alt text](../documentation_images/import-connect-contact-flow.png)
+![alt text](import-connect-contact-flow.png)
 9) Select **Phone numbers** under the Routing on the left sidebar, then click **Claim a number**. Select a number 
    (or use a ported phone number) and select the recently created contact flow under Additional Options and press 
    **Save** to map the contact flow to the number. Calling the number will trigger the contact flow and start transcription.
-![alt text](../documentation_images/claim-phone-number.png)
+![alt text](claim-phone-number.png)
 
 Contact flows define flow logic in AWS Connect; the sample contact flow created during deployment has all the 
 functionality needed to initialize audio streaming and trigger the Transcribe lambda function and the rest of the 
@@ -55,7 +55,7 @@ transcription. Instructions to install Gradle can be found [here](https://gradle
 under the 'Installing manually' section. \
 To build the Java Lambda, run ```gradle build``` in the current subdirectory. This will build the dependencies 
 specified in the build.gradle file with the java lambda code in ```backend/src``` and zip it up into a package for deployment; 
-this package will be found in the ```bacend/build/distributions``` folder on a successful build.
+this package will be found in the ```backend/build/distributions``` folder on a successful build.
 
 ## Project Architecture
 * The main Java lambda function is located in the ```backend/src``` folder. It takes in metadata from Kinesis Video Streams 
@@ -73,7 +73,7 @@ this package will be found in the ```bacend/build/distributions``` folder on a s
   DynamoDB transcript tables. It extracts location entities and key phrases from the transcript, and performs a 
   'more like this' query for similarity against other stored call transcripts to retrieve the top three SOPs. This 
   lambda function will then write the results to the ```ContactDetails``` DynamoDB table.
-![alt text](../documentation_images/contact-details-table.png)
+![alt text](contact-details-table.png)
 
 ## ElasticSearch
 As mentioned before, use of ElasticSearch is integrated for SOP (Standard Operating Procedure) search recommendation. 
