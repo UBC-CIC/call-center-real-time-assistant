@@ -1,11 +1,11 @@
 import React from 'react';
-import '../styles/App.css';
+import '../../styles/MainApp.css';
 import {Button, Form, Grid, Segment, TextArea} from 'semantic-ui-react';
 import AssistantWindow from './AssistantWindow';
-import FeedbackButton from "./buttons/FeedbackButton";
+import FeedbackButton from "./FeedbackButton";
 import CallWindow from "./CallWindow";
 import {AmplifySignOut} from "@aws-amplify/ui-react";
-import {createFeedback} from "../graphql/mutations";
+import {createFeedback} from "../../graphql/mutations";
 import {API} from "aws-amplify";
 import AssistantWindowState from "./AssistantWindowState";
 
@@ -167,7 +167,7 @@ export default class AssistantApp extends React.Component {
 
     render() {
         return (
-            <div className="App">
+            <div className="MainApp">
                 <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
                     <Grid.Column style={{maxWidth: 1200}}>
                         <Segment>

@@ -1,8 +1,7 @@
 import React from "react"
 import {Grid} from 'semantic-ui-react'
 import GridRow from "./GridRow"
-import indexDocument from "./ElasticSearchService";
-import invokeLambda from "./LambdaInvoker";
+import invokeLambda from "../LambdaInvoker";
 
 
 export default class MainGrid extends React.Component {

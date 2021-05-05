@@ -3,8 +3,8 @@ import {Button, Dropdown, Grid, Icon} from 'semantic-ui-react';
 import {DynamoDBClient, ScanCommand} from "@aws-sdk/client-dynamodb";
 import {unmarshall} from "@aws-sdk/util-dynamodb";
 import {Auth} from "aws-amplify";
-import config from "../aws-exports";
-import invokeLambda from "./LambdaInvoker"
+import config from "../../aws-exports";
+import invokeLambda from "../LambdaInvoker"
 
 
 const queryParams = {

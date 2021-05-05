@@ -2,8 +2,8 @@ import React from 'react';
 import {Segment, Header} from 'semantic-ui-react'
 import MainTable from "./MainTable"
 import {API, graphqlOperation} from 'aws-amplify'
-import {listFeedbacks} from '../graphql/queries'
-import {deleteFeedback} from '../graphql/mutations'
+import {listFeedbacks} from '../../graphql/queries'
+import {deleteFeedback} from '../../graphql/mutations'
 
 
 export default class Feedback extends React.Component {

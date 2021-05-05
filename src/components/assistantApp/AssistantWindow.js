@@ -1,13 +1,13 @@
 import React from "react";
 import {Button, Grid, Message, Segment} from "semantic-ui-react";
 import TranscriptBox from "./TranscriptBox";
-import KeyPhraseSearcher from "./dropdowns/KeyPhraseSearcher";
-import ProcedureSearcher from "./dropdowns/ProcedureSearcher";
-import JurisdictionSearcher from "./dropdowns/JurisdictionSearcher";
+import KeyPhraseSearcher from "./KeyPhraseSearcher";
+import ProcedureSearcher from "./ProcedureSearcher";
+import JurisdictionSearcher from "./JurisdictionSearcher";
 import {DynamoDBClient, GetItemCommand} from "@aws-sdk/client-dynamodb";
 import {marshall, unmarshall} from "@aws-sdk/util-dynamodb";
-import {DEFAULT_SOP_BUTTON_VALUE, DYNAMODB_PING_INTERVAL, END_OF_CALL_STRING} from "./Constants";
-import config from "../aws-exports";
+import {DEFAULT_SOP_BUTTON_VALUE, DYNAMODB_PING_INTERVAL, END_OF_CALL_STRING} from "../Constants";
+import config from "../../aws-exports";
 import {Auth} from "aws-amplify";
 
 

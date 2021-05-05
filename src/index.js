@@ -1,18 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { applyMiddleware, createStore } from "redux";
+import thunk from "redux-thunk";
+import { Provider } from "react-redux";
+import Amplify from "aws-amplify";
+import awsExports from "./aws-exports";
 import './index.css';
-import App from './components/App';
+import App from './App';
 import reportWebVitals from './reportWebVitals';
+import reducers from "./components/reducers";
 import 'semantic-ui-css/semantic.min.css';
 
-/**
- * UI Entry-point, only extra functionality here is the import of semantic UI
- */
+Amplify.configure(awsExports);
+
+const store = createStore(
+    reducers, applyMiddleware(thunk)
+);
+
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+    <Provider store={store}>
+            <App />
+    </Provider>,
   document.getElementById('root')
 );
 

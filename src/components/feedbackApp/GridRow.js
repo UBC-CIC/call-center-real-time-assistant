@@ -1,7 +1,7 @@
 import React from "react"
 import {Grid, Label, Icon} from 'semantic-ui-react'
-import AcceptCancelButton from './buttons/AcceptDiscardButton'
-import DropDownButton from './buttons/DropDownButton'
+import AcceptCancelButton from './AcceptDiscardButton'
+import DropDownButton from './DropDownButton'
 
 export default class GridRow extends React.Component {
     constructor(props) {

@@ -3,13 +3,13 @@ import config from "../aws-exports";
 import {withAuthenticator} from "@aws-amplify/ui-react";
 import React from "react";
 import {BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
-import AssistantApp from "./AssistantApp";
-import Feedback from "./Feedback"
+import AssistantApp from "./assistantApp/AssistantApp";
+import Feedback from "./feedbackApp/Feedback"
 import {Menu} from "semantic-ui-react";
 
 Amplify.configure(config);
 
-class App extends React.Component {
+export default class MainApp extends React.Component {
     render() {
         let navbarState = ''
         return (
@@ -18,14 +18,13 @@ class App extends React.Component {
                     <div align={'center'}>
                         <Menu widths={4}>
                             <Menu.Item
-                                active={navbarState === 'Assistant App'}
+                                active={navbarState === 'Assistant MainApp'}
                                 color={'blue'}
-                                // onClick={()=> this.navbarState='Assistant App'}
                             >
                                 <Link to="/assistantApp/">Assistant App</Link>
                             </Menu.Item>
                             <Menu.Item
-                                active={navbarState === 'Feedback App'}
+                                active={navbarState === 'Feedback MainApp'}
                                 color={'red'}
                             >
                                 <Link to="/feedbackApp/">Feedback App</Link>
@@ -46,4 +45,4 @@ class App extends React.Component {
     }
 }
 
-export default withAuthenticator(App);
+// export default withAuthenticator(MainApp);
