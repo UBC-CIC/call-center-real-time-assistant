@@ -9,14 +9,14 @@ between the currently transcribed call and transcripts of audio call files provi
 
 ## High-level Architecture
 
-![alt text](documentation_images/ecomm911-AWS-diagram.png)
+![alt text](docs/ecomm911-AWS-diagram.png)
 
 ## Stack Documentation and Deployment Guides
 
 [Audio Processing Backend Stack Deployment](https://github.com/UBC-CIC/ecomm-911-historical-audio-processing/blob/master/backend/backend-README.md) \
 [Audio Processing Frontend Stack Deployment](https://github.com/UBC-CIC/ecomm-911-historical-audio-processing/blob/master/frontend-README.md) \
-[Real-Time Assistant Backend Stack Deployment](backend/backend-README.md) \
-[Real-Time Assistant Frontend Stack Deployment](frontend-README.md)
+[Real-Time Assistant Backend Stack Deployment](docs/backend-README.md) \
+[Real-Time Assistant Frontend Stack Deployment](docs/frontend-README.md)
 
 ## Credits
 This prototype was coded and architected by Colin Zhang, with guidance from the UBC CIC tech and project teams

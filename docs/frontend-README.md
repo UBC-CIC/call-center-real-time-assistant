@@ -6,8 +6,8 @@ Frontend for the ecomm911 virtual assistant app for non-emergency call takers
 A single page [React application](https://github.com/facebook/create-react-app) that connects to the virtual assistant
 backend.
 
-![alt text](./documentation_images/real-time-assistant-assistantUI.PNG)
-![alt text](./documentation_images/real-time-assistant-feedbackUI.PNG)
+![alt text](real-time-assistant-assistantUI.PNG)
+![alt text](real-time-assistant-feedbackUI.PNG)
 
 ## Deployment
 
@@ -20,12 +20,12 @@ The deployment is similar to that of the call transcriber frontend, as usual you
 3) After authenticating into your Github account, select the forked repository under the repository dropdown. Leave the default branch as is.
    
    NOTE: You will need to give permissions to the Amplify service to access your github account if not already done
-   ![alt text](documentation_images/frontend-step-1.PNG)
+   ![alt text](frontend-step-1.PNG)
 4) On the next page, **MainApp build and test settings**, keep the default build settings. You can rename the app name.
 5) Select **Create new environment** under the **Select a backend environment** dropdown and make sure to name it as **dev** (some stack deployment relies on this name), and select your AWS Amplify service role in the following dropdown if one exists; if not, Select 'Create new role' and quickly create one using the default settings and refresh the role selection.
-   ![alt text](documentation_images/frontend-step-2.PNG)
+   ![alt text](frontend-step-2.PNG)
 6) Review the settings and click **Save and deploy**, and wait for the deployment build to complete, which will take some time.
-   ![alt text](documentation_images/frontend-step-3.PNG)
+   ![alt text](frontend-step-3.PNG)
 
 
 Within Amplify Console, you should see an auto-generated URL under **Frontend environment** - that is the URL used to access the frontend build. You can now create your user accounts and log in via the URL.
