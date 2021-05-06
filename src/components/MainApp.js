@@ -1,6 +1,5 @@
 import Amplify from "aws-amplify";
 import config from "../aws-exports";
-import {withAuthenticator} from "@aws-amplify/ui-react";
 import React from "react";
 import {BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
 import AssistantApp from "./assistantApp/AssistantApp";
@@ -44,5 +43,3 @@ export default class MainApp extends React.Component {
         );
     }
 }
-
-// export default withAuthenticator(MainApp);

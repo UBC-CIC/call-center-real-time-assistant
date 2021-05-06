@@ -1,13 +1,19 @@
 import React from 'react';
-import {Grid} from "semantic-ui-react";
 import Navbar from "../../navbar/Navbar";
 import MainApp from "../../MainApp";
 
 function PageContainer(props) {
-    return (<Grid className="MainApp" style={{height: '100vh'}}>
-        <Navbar/>
-        <MainApp/>
-    </Grid>)
+    return (
+        <div>
+            <div>
+                <Navbar/>
+            </div>
+            <hr/>
+            <div>
+                <MainApp/>
+            </div>
+        </div>
+    )
 }
 
 export default PageContainer;
