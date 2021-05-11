@@ -8,45 +8,51 @@ most appropriate Standard Operating Procedure for based on document similarity. 
 Amazon Connect, Amazon Transcribe, Amazon Comprehend, AWS Lambda, DynamoDB, and (indirectly) Amazon Kinesis Video Streams.
 
 ## Deployment Steps
-1) Create an S3 bucket to upload deployment files with the following command, or re-use the same bucket you created in 
-   the previously deployed stack:
-```
-aws s3api create-bucket --bucket <YOUR-BUCKET-NAME> --create-bucket-configuration LocationConstraint=<YOUR-REGION> --region <YOUR-REGION>
-```
-2) Set up an instance of Amazon Connect from the AWS console. Details on instance creation can be 
+1) Set up an instance of Amazon Connect from the AWS console. Details on instance creation can be 
    found [here](https://docs.aws.amazon.com/connect/latest/adminguide/tutorial1-create-instance.html).
-3) In that same created instance, **enable live media streaming** so that it supports the start/stop media streaming 
+2) In that same created instance, **enable live media streaming** so that it supports the start/stop media streaming 
    contact flow blocks that are required in the contact flows (workflow once an Amazon Connect number is called). 
    Instructions for enabling this can be 
    found [here](https://docs.aws.amazon.com/connect/latest/adminguide/enable-live-media-streams.html).
-4) Clone the git repository into your local directory if you haven't already. Within this directory, change directory into 
-   the ```./backend/deployment``` folder, and run the following command to upload the zipped lambdas to your bucket:
-```
-aws s3 sync . s3://<YOUR-BUCKET-NAME>/deployment --region <YOUR-REGION> --profile <YOUR-PROFILE>
-```
-5) In this subdirectory with the template.yaml file, i.e`(./backend)`, run the following 
-   AWS Cloudformation command to deploy the stack:
-```
-aws cloudformation deploy --capabilities CAPABILITY_IAM --template ./template.yaml --stack-name <STACK-NAME> --parameter-overrides audioFileTranscribeStack=<PREVIOUS-STACK-NAME> existingS3BucketName=<DEPLOYMENT-BUCKET-NAME> --profile <YOUR-PROFILE> --region <YOUR-REGION>
-``` 
-6) A new S3 bucket will be created during deployment (has the format 
+3) Clone the git repository into your local directory if you haven't already. Open the terminal in the `backend` folder
+   of the repository, and run the deployment script with parameter values passed in:
+
+   For Mac, Linux and Windows Subsystem for Linux users:
+   
+   ```
+   deploy.sh --existing-bucket-name <AWS_BUCKET_NAME> --aws-region <AWS_REGION> --aws-profile <AWS_PROFILE> --transcription-stack-name <TRANSCRIPTION_STACK_NAME> ---stack-name <STACK_NAME>
+   ```
+
+   For Windows users:
+
+   ```   
+   deploy.bat existing-bucket-name:<AWS_BUCKET_NAME> aws-region:<AWS_REGION> aws-profile:<AWS_PROFILE> transcription-stack-name:<TRANSCRIPTION_STACK_NAME> stack-name:<STACK_NAME>
+   ```
+
+   The script will upload the pre-packaged deployment zips in the `deployment` folder to the S3 bucket created in the
+   previous step, and then cloudformation will deploy the app using the resources in the bucket.
+
+4) A new S3 bucket will be created during deployment (has the format 
    `<STACK-NAME>-createS3bucket-XXXXXXXXXX`, the bucket name is also in the Outputs tab of this Cloudformation stack in 
    the Cloudformation Console) and will contain a sample contact flow to be imported into AWS Connect. 
    Navigate to the newly created S3 bucket and download the contact flow, which is essentially a JSON file.
-7) Login to your Amazon Connect instance. Select **Contact Flows** under Routing on the left sidebar, and click 
+   This file contains the processing workflow for Amazon Connect once a call is made.
+5) Login to your Amazon Connect instance. Select **Contact Flows** under Routing on the left sidebar, and click 
    on **Create Contact Flow**.
 ![alt text](create-contact-flow.png)
-8) Select **Import flow (beta)** under the Save dropdown and select the downloaded file. Save and publish.
+6) Select **Import flow (beta)** under the Save dropdown and select the downloaded file. Save and publish.
 ![alt text](import-connect-contact-flow.png)
-9) Select **Phone numbers** under the Routing on the left sidebar, then click **Claim a number**. Select a number 
+7) Select **Phone numbers** under the Routing on the left sidebar, then click **Claim a number**. Select a number 
    (or use a ported phone number) and select the recently created contact flow under Additional Options and press 
-   **Save** to map the contact flow to the number. Calling the number will trigger the contact flow and start transcription.
+   **Save** to map the contact flow to the number. 
+   
+    Calling the number will trigger the contact flow and start transcription.
 ![alt text](claim-phone-number.png)
 
-Contact flows define flow logic in AWS Connect; the sample contact flow created during deployment has all the 
-functionality needed to initialize audio streaming and trigger the Transcribe lambda function and the rest of the 
+Contact flows define processing flow logic in AWS Connect; the sample contact flow created during deployment has all the 
+functionality needed to **initialize audio streaming** and **trigger the Transcribe lambda function** and the rest of the 
 workflow. The caller is transferred to a basic queue as default behaviour after triggering, so handling incoming 
-callers is can be customized and integrated according to the user's needs.
+callers can be customized and integrated according to the user's needs via the Connect Console.
 
 ## Build Steps
 CloudFormation and build infrastructure were mostly unchanged from the original template project. Lambdas for helper 
