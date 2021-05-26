@@ -1,7 +1,7 @@
-# E-Comm 911 Real-Time Assistant (Part 2)
+# Call Centre Real-Time Assistant (Part 2)
 
 ## Project Overview
-The second half of the E-Comm 911 call center virtual assistant Proof of Concept - this stack initializes the 
+The second half of the Call Centre Virtual Assistant Proof of Concept - this stack initializes the 
 resources that receives and transcribes the incoming caller and call taker audio from the AWS Connect instance in 
 near-real time, and queries the results against the Elasticsearch Cluster deployed in the previous stack to retrieve the 
 most appropriate Standard Operating Procedure for based on document similarity. This portion of the solution leverages 
@@ -98,7 +98,7 @@ selection parameters are edited so that more terms in the input will be consider
 and stop words may also be defined.
 
 ## Future Development Considerations
-The next steps for finishing this project would be the first two points.
+The next steps for refining this project (for production usage) would be the first two points.
 * Accuracy of extracting locations via AWS Comprehend will depend on voice quality and clarity in calls. In addition, 
   not all city names will be detected as location type entities. 
 * Custom vocabularies may be able to reinforce streaming transcriptions, similar to transcription jobs as well as a custom

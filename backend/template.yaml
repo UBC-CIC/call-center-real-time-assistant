@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >
-  "E-Comm 911 Virtual Assistant Connect Stack - Deploys the following resources:
+  "Call Center Real-Time Assistant Backend - Deploys the following resources:
   - S3 Bucket for the sample contact flow
   - Dynamo DB tables: transcriptSegments, transcriptSegmentsToCustomer, and contactDetails
   - A Lambda triggered on inbound contacts to store the initial contact details
@@ -26,10 +26,6 @@ Parameters:
     Type: String
     Default: contactDetails
     Description: The name of the DynamoDB Table where contact details will be written (Ensure you do not have a table with this name already).
-  jurisdictionsTable:
-    Type: String
-    Default: Jurisdictions
-    Description: The name of the DynamoDB Table where valid jurisdiction locations will be stored.
   existingS3BucketName:
     Type: String
     Description: The name of the S3 bucket that contains the zipped lambda deployment packages
@@ -571,7 +567,6 @@ Resources:
         Variables:
           CONTACT_TABLE_NAME: !Ref contactDetailsTable
           CALL_TAKER_TABLE_NAME: !Ref transcriptSegmentsToCustomerTable
-          JURISDICTION_TABLE_NAME: !Ref jurisdictionsTable
           ES_DOMAIN:
             Fn::ImportValue: !Sub "${audioFileTranscribeStack}-ESDomainName"
       Code:

@@ -1,5 +1,5 @@
-# Virtual Assistant - Frontend
-Frontend for the ecomm911 virtual assistant app for non-emergency call takers
+# Call Center Virtual Assistant - Frontend
+Frontend for the Call Center Virtual Assistant app for non-emergency call takers
 
 ## Project Overview
 
@@ -47,7 +47,7 @@ Using AWS Amplify, this project has the following configured backend resources:
 
 ## Logging in
 
-Cognito is used to authenticate users into the frontend and integrates with . Users only require their name and a 
+Cognito is used to authenticate users into the frontend and integrates with . Users only require their name, and a 
 strong password to create an account.
 After account creation, users will need to verify their account by inputting the 6-digit verification code that was 
 sent to their provided email address before being able to log in to the system.
