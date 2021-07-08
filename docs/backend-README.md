@@ -7,6 +7,11 @@ near-real time, and queries the results against the Elasticsearch Cluster deploy
 most appropriate Standard Operating Procedure for based on document similarity. This portion of the solution leverages 
 Amazon Connect, Amazon Transcribe, Amazon Comprehend, AWS Lambda, DynamoDB, and (indirectly) Amazon Kinesis Video Streams.
 
+## Deployment Prerequisites
+* Having an AWS account
+* Having the AWS CLI v2 [installed](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) and
+  [configured with credentials](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) on your system
+
 ## Deployment Steps
 1) Set up an instance of Amazon Connect from the AWS console. Details on instance creation can be 
    found [here](https://docs.aws.amazon.com/connect/latest/adminguide/tutorial1-create-instance.html).
