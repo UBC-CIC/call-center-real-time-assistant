@@ -1,13 +1,19 @@
 #!/usr/bin/env bash
 # ./deploy.sh --existing-bucket-name <AWS_BUCKET_NAME> --aws-region <AWS_REGION> --aws-profile <AWS_PROFILE> --transcription-stack-name <TRANSCRIPTION_STACK_NAME> --assistant-stack-name <STACK_NAME>
 
+bucketName=${2}
+awsRegion=${4}
+awsProfile=${6}
+oldStackName=${8}
+stackName=${10}
+
 cd deployment
 
-aws s3 sync . s3://${existing-bucket-name}/deployment --region ${aws-region} --profile ${aws-profile}
+aws s3 sync . s3://${bucketName}/deployment --region ${awsRegion} --profile ${awsProfile}
 
 cd ..
 
 aws cloudformation deploy --capabilities CAPABILITY_IAM \
-    --template ./template.yaml --stack-name ${stack-name} \
-    --parameter-overrides audioFileTranscribeStack=${transcription-stack-name} existingS3BucketName=${existing-bucket-name} \
-    --profile ${aws-profile} --region ${aws-region}
+    --template ./template.yaml --stack-name ${stackName} \
+    --parameter-overrides audioFileTranscribeStack=${oldStackName} existingS3BucketName=${bucketName} \
+    --profile ${awsProfile} --region ${awsRegion}
